@@ -7,6 +7,7 @@ import {
 } from "@blueprintjs/core";
 import { Tokens } from "../Tokens/Tokens";
 import { SelectOrganization } from "./SelectOrganization";
+import { SelectProject } from "./SelectProject";
 
 export const TopMenu = () => {
     return (
@@ -15,7 +16,10 @@ export const TopMenu = () => {
                 <NavbarHeading>ez-build</NavbarHeading>
                 <NavbarDivider />
                 <Tokens />
+                <NavbarDivider />
                 <SelectOrganization />
+                <NavbarDivider />
+                <SelectProject />
             </NavbarGroup>
         </Navbar>
     );

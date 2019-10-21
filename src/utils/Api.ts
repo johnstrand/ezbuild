@@ -1,5 +1,5 @@
 import { OrgSettings } from "./PatStore";
-import { ResponseList, Project } from "./ApiTypes";
+import { ResponseList, Project, BuildDefinition } from "./ApiTypes";
 
 function getHeaders(pat: string) {
     return {
@@ -25,6 +25,16 @@ export const Api = {
             const response = await get<ResponseList<Project>>(
                 org,
                 `_apis/projects?api-version=5.1`
+            );
+
+            return response.value;
+        }
+    },
+    buildDefinitions: {
+        async list(org: OrgSettings, project: string) {
+            const response = await get<ResponseList<BuildDefinition>>(
+                org,
+                `${project}/_apis/build/definitions?api-version=5.1`
             );
 
             return response.value;

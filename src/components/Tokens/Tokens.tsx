@@ -17,7 +17,9 @@ export const Tokens = () => {
     return (
         <>
             <Popover
-                target={<Button icon="list" onClick={() => setVisible(true)} />}
+                target={
+                    <Button icon="settings" onClick={() => setVisible(true)} />
+                }
                 interactionKind="hover-target"
                 inheritDarkTheme
                 content="Administer
@@ -33,7 +35,7 @@ export const Tokens = () => {
                     Azure Devops Organizations
                 </div>
                 <div className={Classes.DIALOG_BODY}>
-                    <HTMLTable className="bp3-html-table-bordered bp3-html-table-striped bp3-interactive">
+                    <HTMLTable bordered striped interactive>
                         <thead>
                             <tr>
                                 <th>Name</th>

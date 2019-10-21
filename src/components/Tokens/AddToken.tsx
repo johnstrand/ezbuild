@@ -6,10 +6,7 @@ import {
     FormGroup,
     InputGroup
 } from "@blueprintjs/core";
-import {
-    validateOrganization as tryAddOrganization,
-    resetValidation
-} from "../../utils/Actions";
+import { tryAddOrganization, resetValidation } from "../../utils/Actions";
 import { useSquawk, usePending } from "../../utils/Store";
 
 interface Form {

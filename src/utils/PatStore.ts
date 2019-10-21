@@ -12,6 +12,10 @@ export class PatStore {
         return { ...this.cache };
     }
 
+    empty() {
+        return Object.keys(this.cache).length === 0;
+    }
+
     exists(name: string) {
         return this.cache.hasOwnProperty(name);
     }
