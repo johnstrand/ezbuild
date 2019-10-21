@@ -1,22 +1,23 @@
-.App {
-  text-align: center;
+body {
+    background-color: #394b59;
+}
+.app-root {
+    width: 80%;
+    margin: 0 auto;
 }
 
-.App-logo {
-  height: 40vmin;
+.large-dialog {
+    width: 70%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.large-dialog table {
+    width: 100%;
 }
 
-.App-link {
-  color: #09d3ac;
+.large-dialog table th.header-5 {
+    width: 5%;
+}
+
+.large-dialog table th.header-right {
+    text-align: right;
 }
