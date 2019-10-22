@@ -19,7 +19,20 @@ async function get<T>(org: OrgSettings, url: string) {
     return result;
 }
 
-export const Api = {
+interface ProjectService {
+    list(org: OrgSettings): Promise<Project[]>;
+}
+
+interface BuildDefinitionService {
+    list(org: OrgSettings, project: string): Promise<BuildDefinition[]>;
+}
+
+export interface Api {
+    projects: ProjectService;
+    buildDefinitions: BuildDefinitionService;
+}
+
+export const Api: Api = {
     projects: {
         async list(org: OrgSettings) {
             const response = await get<ResponseList<Project>>(
