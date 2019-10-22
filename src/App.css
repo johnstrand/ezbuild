@@ -10,6 +10,14 @@ body {
     width: 70%;
 }
 
+.scroll-dialog {
+    height: 90vh;
+}
+
+.scroll-dialog .bp3-dialog-body {
+    overflow-y: scroll;
+}
+
 .large-dialog table {
     width: 100%;
 }

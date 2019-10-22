@@ -10,7 +10,7 @@ export const resetValidation = action(_ => {
 });
 
 export const tryAddOrganization = action<OrgSettings>(
-    async ({ orgs, projects }, settings) => {
+    async ({ orgs, projects, selectedProject, selectedOrg }, settings) => {
         pending("validToken", true);
         const org = { ...settings };
         const first = patStore.empty();
@@ -35,7 +35,13 @@ export const tryAddOrganization = action<OrgSettings>(
             validToken = false;
         }
         pending("validToken", false);
-        return { validToken, orgs, projects: first ? p : projects };
+        return {
+            validToken,
+            orgs,
+            selectedOrg: first ? org : selectedOrg,
+            projects: first ? p : projects,
+            selectedProject: first ? p[0].name : selectedProject
+        };
     }
 );
 
@@ -43,21 +49,29 @@ export const listProjects = action<OrgSettings>(async (_, settings) => {
     pending("projects", true);
     const projects = await Api.projects.list(settings);
     if (projects.length) {
-        listBuildDefinitions({ settings, project: projects[0].id });
+        listBuildDefinitions({ settings, project: projects[0].name });
     }
     pending("projects", false);
-    return { projects };
+    return {
+        selectedOrg: settings,
+        projects,
+        selectedProject: projects[0].name
+    };
 });
 
 export const listBuildDefinitions = action<{
     settings: OrgSettings;
     project: string;
 }>(async (_, { settings, project }) => {
-    const buildDefinitions = await Api.buildDefinitions.list(settings, project);
-    return { buildDefinitions };
+    pending("buildDefinitions", true);
+    const buildDefinitions = await Api.builds.listDefinitions(
+        settings,
+        project
+    );
+    pending("buildDefinitions", false);
+    return { buildDefinitions, selectedProject: project };
 });
 
 if (!patStore.empty()) {
-    const first = patStore.get()[patStore.names()[0]];
-    listProjects(first);
+    listProjects(patStore.first()!);
 }

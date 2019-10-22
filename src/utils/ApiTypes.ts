@@ -28,6 +28,7 @@ export interface BuildDefinition {
     revision: number;
     createdDate: Date;
     project: Project;
+    repository: Repository;
 }
 
 export interface ValueLinks {
@@ -51,4 +52,96 @@ export enum QueueStatus {
 
 export enum Type {
     Build = "build"
+}
+
+export interface Build {
+    _links: ValueLinks;
+    properties: any;
+    tags: any[];
+    validationResults: any[];
+    plans: Plan[];
+    triggerInfo: any;
+    id: number;
+    buildNumber: string;
+    status: string;
+    result: BuildResult;
+    queueTime: string;
+    startTime: string;
+    finishTime: string;
+    url: string;
+    definition: BuildDefinition;
+    buildNumberRevision: number;
+    project: Project;
+    uri: string;
+    sourceBranch: string;
+    sourceVersion: string;
+    queue: Queue;
+    priority: string;
+    reason: Reason;
+    requestedFor: User;
+    requestedBy: User;
+    lastChangedDate: Date;
+    lastChangedBy: User;
+    orchestrationPlan: Plan;
+    logs: Logs;
+    repository: Repository;
+    keepForever: boolean;
+    retainedByRelease: boolean;
+    parameters?: string;
+}
+
+export interface Plan {
+    planId: string;
+}
+
+export interface Logs {
+    id: number;
+    type: string;
+    url: string;
+}
+
+export interface Queue {
+    id: number;
+    name: string;
+    pool: Pool;
+}
+
+export interface Pool {
+    id: number;
+    name: string;
+}
+
+export interface Repository {
+    id: string;
+    type: string;
+    name: string;
+    url: string;
+    defaultBranch: string;
+    clean: string;
+    checkoutSubmodules: boolean;
+}
+
+export enum Reason {
+    Manual = "manual",
+    Schedule = "schedule"
+}
+
+export type BuildResult =
+    | "canceled"
+    | "failed"
+    | "none"
+    | "partiallySucceeded"
+    | "succeeded";
+
+export interface BuildRequest {
+    queue: Id;
+    definition: Id;
+    project: Id;
+    sourceBranch: string;
+    sourceVersion: string;
+    parameters: string;
+}
+
+export interface Id {
+    id: number | string;
 }

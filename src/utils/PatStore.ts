@@ -12,6 +12,10 @@ export class PatStore {
         return { ...this.cache };
     }
 
+    first() {
+        return this.empty() ? null : this.cache[this.names()[0]];
+    }
+
     empty() {
         return Object.keys(this.cache).length === 0;
     }
