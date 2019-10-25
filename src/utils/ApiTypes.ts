@@ -121,6 +121,30 @@ export interface Repository {
     checkoutSubmodules: boolean;
 }
 
+export interface Branch {
+    commit: Commit;
+    name: string;
+    aheadCount: number;
+    behindCount: number;
+    isBaseVersion: boolean;
+}
+
+export interface Commit {
+    commitId: string;
+    author: Author;
+    committer: Author;
+    comment: string;
+    url: string;
+    treeId?: string;
+    parents?: string[];
+}
+
+export interface Author {
+    name: string;
+    email: string;
+    date: string;
+}
+
 export enum Reason {
     Manual = "manual",
     Schedule = "schedule"

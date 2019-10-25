@@ -1,7 +1,7 @@
 import createStore from "./Squawk"; //"squawk-react";
 import { OrgSettingsCollection, patStore, OrgSettings } from "./PatStore";
 import { Project, BuildDefinition } from "./ApiTypes";
-import { Api, ProjectService, BuildService } from "./Api";
+import { Api, ProjectService, BuildService, RepositoryService } from "./Api";
 
 interface AppState {
     orgs: OrgSettingsCollection;
@@ -12,6 +12,7 @@ interface AppState {
     buildDefinitions: BuildDefinition[];
     projectService: ProjectService;
     buildService: BuildService;
+    repositoryService: RepositoryService;
 }
 
 export const { action, useSquawk, pending, usePending, update } = createStore<
@@ -24,5 +25,6 @@ export const { action, useSquawk, pending, usePending, update } = createStore<
     selectedProject: null,
     buildDefinitions: [],
     projectService: Api.projects,
-    buildService: Api.builds
+    buildService: Api.builds,
+    repositoryService: Api.repository
 });

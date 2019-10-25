@@ -4,7 +4,8 @@ import {
     Project,
     BuildDefinition,
     Build,
-    BuildRequest
+    BuildRequest,
+    Branch
 } from "./ApiTypes";
 
 function getHeaders(pat: string) {
@@ -56,15 +57,35 @@ export interface BuildService {
 
 export interface RepositoryService {
     listRepositories(): void; // GET https://dev.azure.com/{organization}/{project}/_apis/git/repositories?api-version=5.1
-    listBranches(): void; // GET https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/stats/branches?api-version=5.1
+    listBranches(
+        org: OrgSettings,
+        project: string,
+        repository: string
+    ): Promise<Branch[]>;
 }
 
 export interface Api {
     projects: ProjectService;
     builds: BuildService;
+    repository: RepositoryService;
 }
 
 export const Api: Api = {
+    repository: {
+        listRepositories() {},
+        async listBranches(
+            org: OrgSettings,
+            project: string,
+            repository: string
+        ) {
+            const result = await get<ResponseList<Branch>>(
+                org,
+                `${project}/_apis/git/repositories/${repository}/stats/branches?api-version=5.1`
+            );
+
+            return result.value;
+        }
+    },
     projects: {
         async list(org: OrgSettings) {
             const response = await get<ResponseList<Project>>(

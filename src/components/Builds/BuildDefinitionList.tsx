@@ -74,7 +74,11 @@ export const BuildDefinitionList = () => {
                         visible={buildDefinitions.length === 0}
                     />
                     {buildDefinitions
-                        .sort((a, b) => (a.path > b.path ? 1 : -1))
+                        .sort((a, b) =>
+                            a.path + "_" + a.name > b.path + "_" + b.name
+                                ? 1
+                                : -1
+                        )
                         .map(b => {
                             const currentlySelected = selected.includes(b.id);
 
@@ -95,7 +99,11 @@ export const BuildDefinitionList = () => {
                                                 id={b.id}
                                                 name={b.name}
                                             />
-                                            <BuildQueue />
+                                            <BuildQueue
+                                                id={b.id}
+                                                name={b.name}
+                                                repository={b.repository}
+                                            />
                                         </ButtonGroup>
                                     </td>
                                 </tr>
