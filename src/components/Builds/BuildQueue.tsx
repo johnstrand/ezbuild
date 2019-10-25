@@ -11,6 +11,11 @@ import { AppToaster } from "../../utils/AppToaster";
 import { WithTooltip } from "../../utils/WithTooltip";
 import { Repository, Branch, Variables } from "../../utils/ApiTypes";
 import { useSquawk } from "../../utils/Store";
+import {
+    DialogFooterActions,
+    DialogHeader,
+    DialogBody
+} from "../Common/Dialog";
 
 interface Props {
     id: number;
@@ -78,14 +83,15 @@ export const BuildQueue = (props: Props) => {
                 onClose={() => setVisible(false)}
                 className="bp3-dark"
             >
-                <div className={Classes.DIALOG_HEADER}>
-                    Queue new build for {props.name}
-                </div>
-                <div className={Classes.DIALOG_BODY}>
+                <DialogHeader content={`Queue new build for ${props.name}`} />
+                <DialogBody>
                     <FormGroup label="Branch" labelFor="branches">
                         <HTMLSelect id="branches" fill>
                             {branches.map(branch => (
-                                <option key={branch.name}>{branch.name}</option>
+                                <option key={branch.name}>
+                                    {branch.name} ({branch.aheadCount} ahead,{" "}
+                                    {branch.behindCount} behind)
+                                </option>
                             ))}
                         </HTMLSelect>
                     </FormGroup>
@@ -104,17 +110,16 @@ export const BuildQueue = (props: Props) => {
                             />
                         </FormGroup>
                     ))}
-                </div>
-                <div className={Classes.DIALOG_FOOTER}>
-                    <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                        <Button
-                            disabled={branches.length === 0}
-                            intent="primary"
-                            text="Queue build"
-                            onClick={addToQueue}
-                        />
-                    </div>
-                </div>
+                </DialogBody>
+                <DialogFooterActions>
+                    <Button text="Cancel" onClick={() => setVisible(false)} />
+                    <Button
+                        disabled={branches.length === 0}
+                        intent="primary"
+                        text="Queue build"
+                        onClick={addToQueue}
+                    />
+                </DialogFooterActions>
             </Dialog>
         </>
     );
