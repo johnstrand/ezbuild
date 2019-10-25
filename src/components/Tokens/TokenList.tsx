@@ -9,6 +9,9 @@ import {
 } from "@blueprintjs/core";
 import { AddToken } from "./AddToken";
 import { useSquawk } from "../../utils/Store";
+import { ConfirmDeleteButton } from "../Common/ConfirmDeleteButton";
+import { deleteOrganization } from "../../utils/Actions";
+import { AppToaster } from "../../utils/AppToaster";
 
 export const TokenList = () => {
     const { orgs } = useSquawk("orgs");
@@ -58,7 +61,19 @@ export const TokenList = () => {
                                     <td>{orgs[k].name}</td>
                                     <td>{orgs[k].alias}</td>
                                     <td className="cell-right">
-                                        <Button icon="delete" intent="danger" />
+                                        <ConfirmDeleteButton
+                                            confirmText="Delete"
+                                            cancelText="Cancel"
+                                            onConfirm={() => {
+                                                deleteOrganization(k);
+                                                AppToaster.show({
+                                                    intent: "danger",
+                                                    message:
+                                                        "Organization deleted",
+                                                    timeout: 5000
+                                                });
+                                            }}
+                                        />
                                     </td>
                                 </tr>
                             ))}
