@@ -8,6 +8,11 @@ import {
 } from "@blueprintjs/core";
 import { tryAddOrganization, resetValidation } from "../../utils/Actions";
 import { useSquawk, usePending } from "../../utils/Store";
+import {
+    DialogHeader,
+    DialogBody,
+    DialogFooterActions
+} from "../Common/Dialog";
 
 interface Form {
     name: string;
@@ -87,10 +92,8 @@ export const AddToken = () => {
                 onClosed={() => dispatch({ type: "clear", value: "" })}
                 className="bp3-dark"
             >
-                <div className={Classes.DIALOG_HEADER}>
-                    Add Azure Devops Organizations
-                </div>
-                <div className={Classes.DIALOG_BODY}>
+                <DialogHeader content="Add Azure Devops Organizations" />
+                <DialogBody>
                     <FormGroup
                         helperText="The name of the organization, given the URL https://dev.azure.com/<org>, this field should have the value of <org>"
                         label="Organization name"
@@ -137,24 +140,19 @@ export const AddToken = () => {
                             onChange={createDispatcher(dispatch, "pat")}
                         />
                     </FormGroup>
-                </div>
-                <div className={Classes.DIALOG_FOOTER}>
-                    <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                        <Button
-                            text="Close"
-                            onClick={() => setVisible(false)}
-                        />
-                        <Button
-                            text="Save"
-                            disabled={!form.valid}
-                            intent="success"
-                            loading={validating}
-                            onClick={() => {
-                                tryAddOrganization(form);
-                            }}
-                        />
-                    </div>
-                </div>
+                </DialogBody>
+                <DialogFooterActions>
+                    <Button text="Close" onClick={() => setVisible(false)} />
+                    <Button
+                        text="Save"
+                        disabled={!form.valid}
+                        intent="success"
+                        loading={validating}
+                        onClick={() => {
+                            tryAddOrganization(form);
+                        }}
+                    />
+                </DialogFooterActions>
             </Dialog>
         </>
     );
