@@ -106,6 +106,7 @@ export const BuildQueue = (props: Props) => {
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                         <Button
+                            disabled={branches.length === 0}
                             intent="primary"
                             text="Queue build"
                             onClick={addToQueue}
