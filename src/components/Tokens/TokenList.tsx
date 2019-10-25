@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dialog, Classes, Button, HTMLTable, Popover } from "@blueprintjs/core";
+import { Dialog, Classes, Button, HTMLTable } from "@blueprintjs/core";
 import { AddToken } from "./AddToken";
 import { useSquawk } from "../../utils/Store";
 import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";

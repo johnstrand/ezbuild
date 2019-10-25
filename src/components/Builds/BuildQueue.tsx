@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Button, Popover, Dialog, Classes } from "@blueprintjs/core";
+import { Button, Dialog, Classes } from "@blueprintjs/core";
 import { AppToaster } from "../../utils/AppToaster";
+import { WithTooltip } from "../../utils/WithTooltip";
 
 export const BuildQueue = () => {
     const [visible, setVisible] = useState(false);
@@ -21,10 +22,9 @@ export const BuildQueue = () => {
 
     return (
         <>
-            <Popover
-                content="Queue new build"
-                interactionKind="hover"
-                target={
+            <WithTooltip
+                text="Queue build"
+                element={
                     <Button
                         icon="play"
                         intent="primary"

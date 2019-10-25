@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { Popover, Button, Dialog, Classes, HTMLTable } from "@blueprintjs/core";
+import { Button, Dialog, Classes, HTMLTable } from "@blueprintjs/core";
 import { useSquawk } from "../../utils/Store";
 import { Build } from "../../utils/ApiTypes";
 import { BuildHistoryItem } from "./BuildHistoryItem";
+import { WithTooltip } from "../../utils/WithTooltip";
+import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
+import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 
 interface Props {
     id: number;
@@ -32,10 +35,9 @@ export const BuildDefinitionHistory = (props: Props) => {
 
     return (
         <>
-            <Popover
-                content="View history"
-                interactionKind="hover"
-                target={<Button icon="history" onClick={loadHistory} />}
+            <WithTooltip
+                text="View history"
+                element={<Button icon="history" onClick={loadHistory} />}
             />
             <Dialog
                 isOpen={visible}
@@ -47,16 +49,19 @@ export const BuildDefinitionHistory = (props: Props) => {
                 </div>
                 <div className={Classes.DIALOG_BODY}>
                     <HTMLTable>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Result</th>
-                                <th>Queued</th>
-                                <th>Completed</th>
-                                <th>Branch</th>
-                            </tr>
-                        </thead>
+                        <HTMLTableSingleHeader>
+                            <th>ID</th>
+                            <th>Result</th>
+                            <th>Queued</th>
+                            <th>Completed</th>
+                            <th>Branch</th>
+                        </HTMLTableSingleHeader>
                         <tbody>
+                            <HTMLTableNoDataRow
+                                columns={5}
+                                visible={list.length === 0}
+                                text="Found no previous builds"
+                            />
                             {list.map(item => (
                                 <BuildHistoryItem key={item.id} item={item} />
                             ))}

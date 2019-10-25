@@ -1,6 +1,7 @@
 import React from "react";
 import { BuildResult } from "../../utils/ApiTypes";
-import { Icon, Popover } from "@blueprintjs/core";
+import { Icon } from "@blueprintjs/core";
+import { WithTooltip } from "../../utils/WithTooltip";
 
 interface Props {
     result: BuildResult;
@@ -26,10 +27,9 @@ export const BuildResultIcon = ({ result }: Props) => {
             : "danger";
 
     return (
-        <Popover
-            content={result}
-            interactionKind="hover-target"
-            target={<Icon icon={icon} intent={color} />}
+        <WithTooltip
+            text={result}
+            element={<Icon icon={icon} intent={color} />}
         />
     );
 };
