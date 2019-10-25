@@ -62,16 +62,26 @@ export const deleteOrganization = action<string>((state, name) => {
 export const listProjects = action<OrgSettings>(
     async ({ projectService }, settings) => {
         pending("projects", true);
-        const projects = await projectService.list(settings);
-        if (projects.length) {
-            listBuildDefinitions({ settings, project: projects[0].name });
+        try {
+            const projects = await projectService.list(settings);
+            if (projects.length) {
+                listBuildDefinitions({ settings, project: projects[0].name });
+            }
+            return {
+                selectedOrg: settings,
+                projects,
+                selectedProject: projects[0].name
+            };
+        } catch {
+            AppToaster.show({
+                intent: "danger",
+                message: `Personal Access Token for ${settings.alias} is invalid`,
+                timeout: 5000
+            });
+        } finally {
+            pending("projects", false);
         }
-        pending("projects", false);
-        return {
-            selectedOrg: settings,
-            projects,
-            selectedProject: projects[0].name
-        };
+        return {};
     }
 );
 
