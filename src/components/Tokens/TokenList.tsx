@@ -10,7 +10,7 @@ import {
 import { AddToken } from "./AddToken";
 import { useSquawk } from "../../utils/Store";
 
-export const Tokens = () => {
+export const TokenList = () => {
     const { orgs } = useSquawk("orgs");
     const hasOrgs = !!Object.keys(orgs).length;
     const [visible, setVisible] = useState(!hasOrgs);
@@ -57,7 +57,7 @@ export const Tokens = () => {
                                 <tr key={k}>
                                     <td>{orgs[k].name}</td>
                                     <td>{orgs[k].alias}</td>
-                                    <td>
+                                    <td className="cell-right">
                                         <Button icon="delete" intent="danger" />
                                     </td>
                                 </tr>

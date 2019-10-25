@@ -29,3 +29,7 @@ body {
 .large-dialog table th.header-right {
     text-align: right;
 }
+
+.large-dialog table td.cell-right {
+    text-align: right;
+}
