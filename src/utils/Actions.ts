@@ -1,5 +1,4 @@
 import { action, pending } from "./Store";
-import { Api } from "./Api";
 
 import { OrgSettings, patStore } from "./PatStore";
 import { AppToaster } from "./AppToaster";
@@ -10,7 +9,10 @@ export const resetValidation = action(_ => {
 });
 
 export const tryAddOrganization = action<OrgSettings>(
-    async ({ orgs, projects, selectedProject, selectedOrg }, settings) => {
+    async (
+        { orgs, projects, selectedProject, selectedOrg, projectService },
+        settings
+    ) => {
         pending("validToken", true);
         const org = { ...settings };
         const first = patStore.empty();
@@ -18,7 +20,7 @@ export const tryAddOrganization = action<OrgSettings>(
         let validToken = true;
         let p: Project[];
         try {
-            p = await Api.projects.list(org);
+            p = await projectService.list(org);
             AppToaster.show({
                 intent: "success",
                 message: "Personal Access Token saved",
@@ -45,26 +47,28 @@ export const tryAddOrganization = action<OrgSettings>(
     }
 );
 
-export const listProjects = action<OrgSettings>(async (_, settings) => {
-    pending("projects", true);
-    const projects = await Api.projects.list(settings);
-    if (projects.length) {
-        listBuildDefinitions({ settings, project: projects[0].name });
+export const listProjects = action<OrgSettings>(
+    async ({ projectService }, settings) => {
+        pending("projects", true);
+        const projects = await projectService.list(settings);
+        if (projects.length) {
+            listBuildDefinitions({ settings, project: projects[0].name });
+        }
+        pending("projects", false);
+        return {
+            selectedOrg: settings,
+            projects,
+            selectedProject: projects[0].name
+        };
     }
-    pending("projects", false);
-    return {
-        selectedOrg: settings,
-        projects,
-        selectedProject: projects[0].name
-    };
-});
+);
 
 export const listBuildDefinitions = action<{
     settings: OrgSettings;
     project: string;
-}>(async (_, { settings, project }) => {
+}>(async ({ buildService }, { settings, project }) => {
     pending("buildDefinitions", true);
-    const buildDefinitions = await Api.builds.listDefinitions(
+    const buildDefinitions = await buildService.listDefinitions(
         settings,
         project
     );
