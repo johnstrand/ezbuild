@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import {
-    Dialog,
-    Classes,
-    Button,
-    HTMLTable,
-    NonIdealState,
-    Popover
-} from "@blueprintjs/core";
+import { Dialog, Classes, Button, HTMLTable, Popover } from "@blueprintjs/core";
 import { AddToken } from "./AddToken";
 import { useSquawk } from "../../utils/Store";
 import { ConfirmDeleteButton } from "../Common/ConfirmDeleteButton";
 import { deleteOrganization } from "../../utils/Actions";
 import { AppToaster } from "../../utils/AppToaster";
+import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
+import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 
 export const TokenList = () => {
     const { orgs } = useSquawk("orgs");
@@ -39,23 +34,19 @@ export const TokenList = () => {
                 </div>
                 <div className={Classes.DIALOG_BODY}>
                     <HTMLTable bordered striped interactive>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Alias</th>
-                                <th className="header-right header-5">
-                                    <AddToken />
-                                </th>
-                            </tr>
-                        </thead>
+                        <HTMLTableSingleHeader>
+                            <th>Name</th>
+                            <th>Alias</th>
+                            <th className="header-right header-5">
+                                <AddToken />
+                            </th>
+                        </HTMLTableSingleHeader>
                         <tbody>
-                            {!hasOrgs && (
-                                <tr>
-                                    <td colSpan={3}>
-                                        <NonIdealState description="No Azure Devops Organizations registered" />
-                                    </td>
-                                </tr>
-                            )}
+                            <HTMLTableNoDataRow
+                                visible={!hasOrgs}
+                                columns={3}
+                                text="No Azure Devops Organizations registered"
+                            />
                             {Object.keys(orgs).map(k => (
                                 <tr key={k}>
                                     <td>{orgs[k].name}</td>

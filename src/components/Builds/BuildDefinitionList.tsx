@@ -9,23 +9,33 @@ import {
 } from "@blueprintjs/core";
 import { BuildDefinitionHistory } from "./BuildDefinitionHistory";
 import { BuildQueue } from "./BuildQueue";
+import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 
 export const BuildDefinitionList = () => {
     const { buildDefinitions } = useSquawk("buildDefinitions");
     const loading = usePending("buildDefinitions");
     const [selected, setSelected] = useState<number[]>([]);
 
-    const handleSelect = (currentlySelected: boolean, id: number) => {
-        setSelected(
-            !currentlySelected
-                ? [...selected, id]
-                : selected.filter(s => s !== id)
-        );
+    const handleSelect = (id?: number) => ({
+        currentTarget: { checked }
+    }: React.FormEvent<HTMLInputElement>) => {
+        if (checked) {
+            setSelected(
+                !id ? buildDefinitions.map(b => b.id) : [...selected, id]
+            );
+        } else {
+            setSelected(!id ? [] : selected.filter(s => s !== id));
+        }
     };
 
     if (loading) {
         return <Spinner size={Spinner.SIZE_LARGE} />;
     }
+
+    const allChecked =
+        selected.length === buildDefinitions.length &&
+        buildDefinitions.length > 0;
+    const someChecked = selected.length > 0 && buildDefinitions.length > 0;
 
     return (
         <div>
@@ -45,20 +55,10 @@ export const BuildDefinitionList = () => {
                     <tr>
                         <th style={{ width: 20 }}>
                             <Checkbox
-                                checked={
-                                    selected.length === buildDefinitions.length
-                                }
-                                indeterminate={
-                                    selected.length > 0 &&
-                                    selected.length !== buildDefinitions.length
-                                }
-                                onChange={ev =>
-                                    setSelected(
-                                        ev.currentTarget.checked
-                                            ? buildDefinitions.map(b => b.id)
-                                            : []
-                                    )
-                                }
+                                disabled={buildDefinitions.length === 0}
+                                checked={allChecked}
+                                indeterminate={someChecked && !allChecked}
+                                onChange={handleSelect()}
                             />
                         </th>
                         <th>Name</th>
@@ -68,13 +68,11 @@ export const BuildDefinitionList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {buildDefinitions.length === 0 && (
-                        <tr>
-                            <td colSpan={5}>
-                                This repository does not have any builds defined
-                            </td>
-                        </tr>
-                    )}
+                    <HTMLTableNoDataRow
+                        columns={5}
+                        text="This project does not have any builds defined"
+                        visible={buildDefinitions.length === 0}
+                    />
                     {buildDefinitions
                         .sort((a, b) => (a.path > b.path ? 1 : -1))
                         .map(b => {
@@ -85,12 +83,7 @@ export const BuildDefinitionList = () => {
                                     <td>
                                         <Checkbox
                                             checked={currentlySelected}
-                                            onClick={() =>
-                                                handleSelect(
-                                                    currentlySelected,
-                                                    b.id
-                                                )
-                                            }
+                                            onClick={handleSelect(b.id)}
                                         />
                                     </td>
                                     <td>{b.name}</td>

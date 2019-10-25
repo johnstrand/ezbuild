@@ -22,14 +22,18 @@ body {
     width: 100%;
 }
 
-.large-dialog table th.header-5 {
+table th.header-5 {
     width: 5%;
 }
 
-.large-dialog table th.header-right {
+table th.header-right {
     text-align: right;
 }
 
-.large-dialog table td.cell-right {
+table td.cell-right {
     text-align: right;
+}
+
+table td.cell-center {
+    text-align: center;
 }
