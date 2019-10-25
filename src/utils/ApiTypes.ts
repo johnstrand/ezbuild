@@ -29,6 +29,7 @@ export interface BuildDefinition {
     createdDate: Date;
     project: Project;
     repository: Repository;
+    variables: Variables;
 }
 
 export interface ValueLinks {
@@ -168,4 +169,13 @@ export interface BuildRequest {
 
 export interface Id {
     id: number | string;
+}
+
+export interface Variables {
+    [key: string]: Variable;
+}
+
+export interface Variable {
+    value: string;
+    allowOverride: boolean;
 }

@@ -4,17 +4,19 @@ import {
     Dialog,
     Classes,
     FormGroup,
-    HTMLSelect
+    HTMLSelect,
+    InputGroup
 } from "@blueprintjs/core";
 import { AppToaster } from "../../utils/AppToaster";
 import { WithTooltip } from "../../utils/WithTooltip";
-import { Repository, Branch } from "../../utils/ApiTypes";
+import { Repository, Branch, Variables } from "../../utils/ApiTypes";
 import { useSquawk } from "../../utils/Store";
 
 interface Props {
     id: number;
     name: string;
     repository: Repository;
+    variables: Variables;
 }
 
 const sort = (a: Branch, b: Branch) => {
@@ -37,11 +39,13 @@ export const BuildQueue = (props: Props) => {
     const prepareQueue = async () => {
         setVisible(true);
         setBranches(
-            (await repositoryService.listBranches(
-                selectedOrg!,
-                selectedProject!,
-                props.repository.id
-            )).sort(sort)
+            (
+                (await repositoryService.listBranches(
+                    selectedOrg!,
+                    selectedProject!,
+                    props.repository.id
+                )) || []
+            ).sort(sort)
         );
     };
 
@@ -83,6 +87,21 @@ export const BuildQueue = (props: Props) => {
                             ))}
                         </HTMLSelect>
                     </FormGroup>
+                    {Object.keys(props.variables).map(key => (
+                        <FormGroup
+                            key={key}
+                            label={key}
+                            labelFor={`var_${key}`}
+                        >
+                            <InputGroup
+                                id={`var_${key}`}
+                                data-lpignore="true"
+                                autoComplete="off"
+                                readOnly={!props.variables[key].allowOverride}
+                                value={props.variables[key].value}
+                            />
+                        </FormGroup>
+                    ))}
                 </div>
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>

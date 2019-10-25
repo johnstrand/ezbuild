@@ -81,7 +81,6 @@ export const BuildDefinitionList = () => {
                         )
                         .map(b => {
                             const currentlySelected = selected.includes(b.id);
-
                             return (
                                 <tr key={b.id}>
                                     <td>
@@ -103,6 +102,7 @@ export const BuildDefinitionList = () => {
                                                 id={b.id}
                                                 name={b.name}
                                                 repository={b.repository}
+                                                variables={b.variables}
                                             />
                                         </ButtonGroup>
                                     </td>
