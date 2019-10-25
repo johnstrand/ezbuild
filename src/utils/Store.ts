@@ -1,4 +1,4 @@
-import createStore from "squawk-react";
+import createStore from "./Squawk"; //"squawk-react";
 import { OrgSettingsCollection, patStore, OrgSettings } from "./PatStore";
 import { Project, BuildDefinition } from "./ApiTypes";
 import { Api, ProjectService, BuildService } from "./Api";

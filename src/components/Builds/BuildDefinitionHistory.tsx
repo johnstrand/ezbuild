@@ -27,7 +27,6 @@ export const BuildDefinitionHistory = (props: Props) => {
             selectedProject!,
             props.id
         );
-
         setList(history);
     };
 
