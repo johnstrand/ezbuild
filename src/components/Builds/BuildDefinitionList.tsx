@@ -5,6 +5,7 @@ import { BuildDefinitionHistory } from "./BuildDefinitionHistory";
 import { BuildQueue } from "./BuildQueue";
 import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
+import { stringCompare } from "../../utils/Comparers";
 
 export const BuildDefinitionList = () => {
     const { buildDefinitions } = useSquawk("buildDefinitions");
@@ -30,10 +31,10 @@ export const BuildDefinitionList = () => {
                         visible={buildDefinitions.length === 0}
                     />
                     {buildDefinitions
-                        .sort((a, b) =>
-                            a.path + "_" + a.name > b.path + "_" + b.name
-                                ? 1
-                                : -1
+                        .sort(
+                            (a, b) =>
+                                stringCompare(a.path, b.path) ||
+                                stringCompare(a.name, b.name)
                         )
                         .map(b => {
                             return (
