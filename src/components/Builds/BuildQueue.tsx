@@ -47,6 +47,8 @@ export const BuildQueue = (props: Props) => {
                 )) || []
             ).sort(sort)
         );
+
+        // TODO: Copy variables into local state and make editable
     };
 
     const addToQueue = () => {
@@ -87,7 +89,7 @@ export const BuildQueue = (props: Props) => {
                             ))}
                         </HTMLSelect>
                     </FormGroup>
-                    {Object.keys(props.variables).map(key => (
+                    {Object.keys(props.variables || {}).map(key => (
                         <FormGroup
                             key={key}
                             label={key}
