@@ -13,6 +13,7 @@ import {
     DialogBody,
     DialogFooterActions
 } from "../Common/Dialog";
+import { WithTooltip } from "../../utils/WithTooltip";
 
 interface Form {
     name: string;
@@ -77,13 +78,18 @@ export const AddToken = () => {
 
     return (
         <>
-            <Button
-                icon="plus"
-                intent="primary"
-                onClick={() => {
-                    resetValidation();
-                    setVisible(true);
-                }}
+            <WithTooltip
+                element={
+                    <Button
+                        icon="plus"
+                        intent="primary"
+                        onClick={() => {
+                            resetValidation();
+                            setVisible(true);
+                        }}
+                    />
+                }
+                text="Add token"
             />
             <Dialog
                 canEscapeKeyClose={false}
