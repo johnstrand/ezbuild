@@ -2,26 +2,22 @@ import React, { useState } from "react";
 import { Dialog, Classes, Button, HTMLTable, Popover } from "@blueprintjs/core";
 import { AddToken } from "./AddToken";
 import { useSquawk } from "../../utils/Store";
-import { ConfirmDeleteButton } from "../Common/ConfirmDeleteButton";
-import { deleteOrganization } from "../../utils/Actions";
-import { AppToaster } from "../../utils/AppToaster";
 import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
 import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
+import { TokenListItem } from "./TokenListItem";
+import { WithTooltip } from "../../utils/WithTooltip";
 
 export const TokenList = () => {
     const { orgs } = useSquawk("orgs");
-    const hasOrgs = !!Object.keys(orgs).length;
+    const hasOrgs = Object.keys(orgs).length > 0;
     const [visible, setVisible] = useState(!hasOrgs);
     return (
         <>
-            <Popover
-                target={
+            <WithTooltip
+                text="Administer access tokens"
+                element={
                     <Button icon="settings" onClick={() => setVisible(true)} />
                 }
-                interactionKind="hover-target"
-                inheritDarkTheme
-                content="Administer
-            access tokens"
             />
             <Dialog
                 isOpen={visible || !hasOrgs}
@@ -47,26 +43,8 @@ export const TokenList = () => {
                                 columns={3}
                                 text="No Azure Devops Organizations registered"
                             />
-                            {Object.keys(orgs).map(k => (
-                                <tr key={k}>
-                                    <td>{orgs[k].name}</td>
-                                    <td>{orgs[k].alias}</td>
-                                    <td className="cell-right">
-                                        <ConfirmDeleteButton
-                                            confirmText="Delete"
-                                            cancelText="Cancel"
-                                            onConfirm={() => {
-                                                deleteOrganization(k);
-                                                AppToaster.show({
-                                                    intent: "danger",
-                                                    message:
-                                                        "Organization deleted",
-                                                    timeout: 5000
-                                                });
-                                            }}
-                                        />
-                                    </td>
-                                </tr>
+                            {Object.keys(orgs).map(key => (
+                                <TokenListItem key={key} org={orgs[key]} />
                             ))}
                         </tbody>
                     </HTMLTable>
