@@ -6,6 +6,7 @@ import { BuildQueue } from "./BuildQueue";
 import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
 import { stringCompare } from "../../utils/Comparers";
+import { BuildDefinitionListItem } from "./BuildDefinitionListItem";
 
 export const BuildDefinitionList = () => {
     const { buildDefinitions } = useSquawk("buildDefinitions");
@@ -36,29 +37,12 @@ export const BuildDefinitionList = () => {
                                 stringCompare(a.path, b.path) ||
                                 stringCompare(a.name, b.name)
                         )
-                        .map(b => {
-                            return (
-                                <tr key={b.id}>
-                                    <td>{b.name}</td>
-                                    <td>{b.path}</td>
-                                    <td>{b.repository.name}</td>
-                                    <td>
-                                        <ButtonGroup>
-                                            <BuildDefinitionHistory
-                                                id={b.id}
-                                                name={b.name}
-                                            />
-                                            <BuildQueue
-                                                id={b.id}
-                                                name={b.name}
-                                                repository={b.repository}
-                                                variables={b.variables}
-                                            />
-                                        </ButtonGroup>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        .map(b => (
+                            <BuildDefinitionListItem
+                                key={b.id}
+                                definition={b}
+                            />
+                        ))}
                 </tbody>
             </HTMLTable>
         </div>
