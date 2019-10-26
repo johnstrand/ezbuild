@@ -58,6 +58,7 @@ export const listProjects = action<OrgSettings>(
             const projects = await projectService.list(settings);
             if (projects.length) {
                 listBuildDefinitions({ settings, project: projects[0].name });
+                listReleaseDefinitions({ settings, project: projects[0].name });
             }
             return {
                 selectedOrg: settings,
@@ -76,6 +77,14 @@ export const listProjects = action<OrgSettings>(
         return {};
     }
 );
+
+export const listReleaseDefinitions = action<{
+    settings: OrgSettings;
+    project: string;
+}>(async ({ releaseService }, { settings, project }) => {
+    await releaseService.listDefinitions(settings, project);
+    return {};
+});
 
 export const listBuildDefinitions = action<{
     settings: OrgSettings;

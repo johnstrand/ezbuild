@@ -5,7 +5,8 @@ import {
     BuildDefinition,
     Build,
     BuildRequest,
-    Branch
+    Branch,
+    ReleaseDefinition
 } from "./ApiTypes";
 
 function getHeaders(pat: string) {
@@ -17,6 +18,17 @@ function getHeaders(pat: string) {
 
 async function get<T>(org: OrgSettings, url: string) {
     const endpoint = `https://dev.azure.com/${org.name}/${url}`;
+    const headers = getHeaders(org.pat);
+    const result = await fetch(endpoint, {
+        method: "GET",
+        mode: "cors",
+        headers
+    }).then<T>(res => res.json());
+    return result;
+}
+
+async function getVsrm<T>(org: OrgSettings, url: string) {
+    const endpoint = `https://vsrm.dev.azure.com/${org.name}/${url}`;
     const headers = getHeaders(org.pat);
     const result = await fetch(endpoint, {
         method: "GET",
@@ -64,10 +76,18 @@ export interface RepositoryService {
     ): Promise<Branch[]>;
 }
 
+export interface ReleaseService {
+    listDefinitions(
+        org: OrgSettings,
+        project: string
+    ): Promise<ReleaseDefinition[]>;
+}
+
 export interface Api {
     projects: ProjectService;
     builds: BuildService;
     repository: RepositoryService;
+    release: ReleaseService;
 }
 
 export const Api: Api = {
@@ -123,6 +143,16 @@ export const Api: Api = {
                 `${request.project.id}/_apis/build/builds?ignoreWarnings=false&api-version=5.1`,
                 request
             );
+        }
+    },
+    release: {
+        async listDefinitions(org: OrgSettings, project: string) {
+            const result = await getVsrm<ResponseList<ReleaseDefinition>>(
+                org,
+                `${project}/_apis/release/definitions?api-version=5.1`
+            );
+
+            return result.value;
         }
     }
 };

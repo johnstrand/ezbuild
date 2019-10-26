@@ -1,6 +1,9 @@
 import React from "react";
 import { useSquawk } from "../../utils/Store";
-import { listBuildDefinitions } from "../../utils/Actions";
+import {
+    listBuildDefinitions,
+    listReleaseDefinitions
+} from "../../utils/Actions";
 
 export const SelectProject = () => {
     const { projects, selectedOrg } = useSquawk("projects", "selectedOrg");
@@ -8,6 +11,7 @@ export const SelectProject = () => {
 
     const selectProject = (project: string) => {
         listBuildDefinitions({ settings: selectedOrg!, project });
+        listReleaseDefinitions({ settings: selectedOrg!, project });
     };
 
     return (

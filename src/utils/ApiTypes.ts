@@ -180,3 +180,23 @@ export interface Variable {
     value: string;
     allowOverride: boolean;
 }
+
+export interface ReleaseDefinition {
+    source: string;
+    revision: number;
+    description: string;
+    createdBy: User;
+    createdOn: string;
+    modifiedBy: User;
+    modifiedOn: string;
+    isDeleted: boolean;
+    variableGroups: any;
+    releaseNameFormat: string;
+    properties: any;
+    id: number;
+    name: string;
+    path: string;
+    projectReference: any;
+    url: string;
+    _links: ValueLinks;
+}
