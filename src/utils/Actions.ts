@@ -26,9 +26,10 @@ export const tryAddOrganization = action<OrgSettings>(
         } catch {
             showToast("Invalid configuration", "danger", "warning-sign");
             p = [];
-            validToken = false;
+            return { validToken: false };
+        } finally {
+            pending("validToken", false);
         }
-        pending("validToken", false);
         return {
             validToken,
             orgs,
@@ -41,14 +42,25 @@ export const tryAddOrganization = action<OrgSettings>(
 
 export const deleteOrganization = action<string>((state, name) => {
     const selected = state.selectedOrg && state.selectedOrg.name === name;
-    // TODO: If any other organizations exist, pick the first one and load data
-    return {
-        orgs: patStore.remove(name),
-        projects: selected ? [] : state.projects,
-        selectedProject: selected ? null : state.selectedProject,
-        selectedOrg: selected ? null : state.selectedOrg,
-        buildDefinitions: selected ? [] : state.buildDefinitions
-    };
+    const orgs = patStore.remove(name);
+
+    if (selected && patStore.empty()) {
+        return {
+            orgs,
+            selectedOrg: null,
+            projects: [],
+            selectedProject: null,
+            buildDefinitions: []
+        };
+    } else {
+        if (selected && !patStore.empty()) {
+            const selectedOrg = patStore.first()!;
+            listProjects(selectedOrg);
+        }
+        return {
+            orgs
+        };
+    }
 });
 
 export const listProjects = action<OrgSettings>(
