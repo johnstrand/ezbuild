@@ -1,7 +1,7 @@
 import React from "react";
 import { BuildResult } from "../../utils/ApiTypes";
 import { Icon } from "@blueprintjs/core";
-import { WithTooltip } from "../../utils/WithTooltip";
+import { WithTooltip } from "../Common/WithTooltip";
 
 interface Props {
     result: BuildResult;

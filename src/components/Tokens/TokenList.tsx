@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Dialog, Classes, Button, HTMLTable } from "@blueprintjs/core";
+import { Dialog, Classes, HTMLTable } from "@blueprintjs/core";
 import { AddToken } from "./AddToken";
 import { useSquawk } from "../../utils/Store";
 import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
 import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 import { TokenListItem } from "./TokenListItem";
-import { WithTooltip } from "../../utils/WithTooltip";
+import { Button } from "../Common/Button";
 
 export const TokenList = () => {
     const { orgs } = useSquawk("orgs");
@@ -13,11 +13,10 @@ export const TokenList = () => {
     const [visible, setVisible] = useState(!hasOrgs);
     return (
         <>
-            <WithTooltip
-                text="Administer access tokens"
-                element={
-                    <Button icon="settings" onClick={() => setVisible(true)} />
-                }
+            <Button
+                icon="settings"
+                onClick={() => setVisible(true)}
+                tooltip="Administer tokens"
             />
             <Dialog
                 isOpen={visible || !hasOrgs}

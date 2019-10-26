@@ -17,6 +17,7 @@ export const TokenListItem = ({ org }: Props) => {
                 <ConfirmDeleteButton
                     confirmText="Delete"
                     cancelText="Cancel"
+                    tooltip="Delete token"
                     onConfirm={() => {
                         deleteOrganization(org.name);
                         showToast("Organization deleted", "danger");

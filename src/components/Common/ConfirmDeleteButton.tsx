@@ -1,27 +1,24 @@
 import React, { useState } from "react";
-import { Button, Alert } from "@blueprintjs/core";
-import { WithTooltip } from "../../utils/WithTooltip";
+import { Alert } from "@blueprintjs/core";
+import { Button } from "./Button";
 
 interface Props {
     confirmText: string;
     cancelText: string;
     onCancel?: () => void;
     onConfirm: () => void;
+    tooltip?: string;
 }
 
 export const ConfirmDeleteButton = (props: Props) => {
     const [visible, setVisible] = useState(false);
     return (
         <>
-            <WithTooltip
-                element={
-                    <Button
-                        icon="delete"
-                        intent="danger"
-                        onClick={() => setVisible(true)}
-                    />
-                }
-                text="Delete item"
+            <Button
+                icon="delete"
+                intent="danger"
+                onClick={() => setVisible(true)}
+                tooltip={props.tooltip}
             />
             <Alert
                 isOpen={visible}
