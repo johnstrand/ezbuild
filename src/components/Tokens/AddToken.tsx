@@ -1,11 +1,5 @@
 import React, { useState, useReducer, useEffect } from "react";
-import {
-    Button,
-    Dialog,
-    Classes,
-    FormGroup,
-    InputGroup
-} from "@blueprintjs/core";
+import { Button, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { tryAddOrganization, resetValidation } from "../../utils/Actions";
 import { useSquawk, usePending } from "../../utils/Store";
 import {
