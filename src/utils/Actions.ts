@@ -1,7 +1,7 @@
 import { action, pending } from "./Store";
 
 import { OrgSettings, patStore } from "./PatStore";
-import { AppToaster } from "./AppToaster";
+import { showToast } from "./AppToaster";
 import { Project } from "./ApiTypes";
 
 export const resetValidation = action(_ => {
@@ -21,18 +21,10 @@ export const tryAddOrganization = action<OrgSettings>(
         let p: Project[];
         try {
             p = await projectService.list(org);
-            AppToaster.show({
-                intent: "success",
-                message: "Personal Access Token saved",
-                timeout: 5000
-            });
+            showToast("Personal Access Token saved", "success");
             orgs = patStore.add(org);
         } catch {
-            AppToaster.show({
-                intent: "danger",
-                message: "Invalid configuration",
-                timeout: 5000
-            });
+            showToast("Invalid configuration", "danger", "warning-sign");
             p = [];
             validToken = false;
         }
@@ -73,11 +65,11 @@ export const listProjects = action<OrgSettings>(
                 selectedProject: projects[0].name
             };
         } catch {
-            AppToaster.show({
-                intent: "danger",
-                message: `Personal Access Token for ${settings.alias} is invalid`,
-                timeout: 5000
-            });
+            showToast(
+                `Personal Access Token for ${settings.alias} is invalid`,
+                "danger",
+                "warning-sign"
+            );
         } finally {
             pending("projects", false);
         }

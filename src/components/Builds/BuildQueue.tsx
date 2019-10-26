@@ -7,7 +7,7 @@ import {
     InputGroup,
     Spinner
 } from "@blueprintjs/core";
-import { AppToaster } from "../../utils/AppToaster";
+import { showToast } from "../../utils/AppToaster";
 import { WithTooltip } from "../../utils/WithTooltip";
 import { Repository, Branch, Variables } from "../../utils/ApiTypes";
 import { useSquawk } from "../../utils/Store";
@@ -53,12 +53,7 @@ export const BuildQueue = (props: Props) => {
     };
 
     const addToQueue = () => {
-        AppToaster.show({
-            intent: "success",
-            message: "Build queued",
-            icon: "cog",
-            timeout: 5000
-        });
+        showToast("Build queued", "success", "cog");
         setVisible(false);
     };
 

@@ -2,7 +2,7 @@ import React from "react";
 import { OrgSettings } from "../../utils/PatStore";
 import { deleteOrganization } from "../../utils/Actions";
 import { ConfirmDeleteButton } from "../Common/ConfirmDeleteButton";
-import { AppToaster } from "../../utils/AppToaster";
+import { showToast } from "../../utils/AppToaster";
 
 interface Props {
     org: OrgSettings;
@@ -19,11 +19,7 @@ export const TokenListItem = ({ org }: Props) => {
                     cancelText="Cancel"
                     onConfirm={() => {
                         deleteOrganization(org.name);
-                        AppToaster.show({
-                            intent: "danger",
-                            message: "Organization deleted",
-                            timeout: 5000
-                        });
+                        showToast("Organization deleted", "danger");
                     }}
                 />
             </td>
