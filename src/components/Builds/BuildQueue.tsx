@@ -74,7 +74,7 @@ export const BuildQueue = (props: Props) => {
             project: {
                 id: projectId!
             },
-            sourceBranch: `refs/heads/${branches[0].name}`,
+            sourceBranch: `refs/heads/${branches[0].name}`, // TODO: Actually use selected branch
             sourceVersion: "",
             reason: 1,
             demands: [],
