@@ -31,6 +31,7 @@ interface Props {
 export const BuildQueue = (props: Props) => {
     const [visible, setVisible] = useState(false);
     const [branches, setBranches] = useState<Branch[]>([]);
+    const [branch, setBranch] = useState("");
     const [loading, setLoading] = useState(true);
     const {
         repositoryService,
@@ -49,15 +50,17 @@ export const BuildQueue = (props: Props) => {
     const prepareQueue = async () => {
         setVisible(true);
         setLoading(true);
-        setBranches(
-            (
-                (await repositoryService.listBranches(
-                    selectedOrg!,
-                    selectedProject!,
-                    props.repository.id
-                )) || []
-            ).sort(branchCompare)
-        );
+        const b = (
+            (await repositoryService.listBranches(
+                selectedOrg!,
+                selectedProject!,
+                props.repository.id
+            )) || []
+        ).sort(branchCompare);
+        setBranches(b);
+        if (b.length > 0) {
+            setBranch(b[0].name);
+        }
         setLoading(false);
 
         // TODO: Copy variables into local state and make editable
@@ -75,7 +78,7 @@ export const BuildQueue = (props: Props) => {
             project: {
                 id: projectId!
             },
-            sourceBranch: `refs/heads/${branches[0].name}`, // TODO: Actually use selected branch
+            sourceBranch: `refs/heads/${branch}`,
             sourceVersion: "",
             reason: 1,
             demands: [],
@@ -115,9 +118,15 @@ export const BuildQueue = (props: Props) => {
                         labelFor="branches"
                         hidden={loading || branches.length === 0}
                     >
-                        <HTMLSelect id="branches" fill>
+                        <HTMLSelect
+                            id="branches"
+                            fill
+                            onChange={({ currentTarget: { value } }) =>
+                                setBranch(value)
+                            }
+                        >
                             {branches.map(branch => (
-                                <option key={branch.name}>
+                                <option key={branch.name} value={branch.name}>
                                     {branch.name} ({branch.aheadCount} ahead,{" "}
                                     {branch.behindCount} behind)
                                 </option>
