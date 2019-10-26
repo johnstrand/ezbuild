@@ -16,6 +16,7 @@ import {
     DialogHeader,
     DialogBody
 } from "../Common/Dialog";
+import { branchCompare } from "../../utils/Comparers";
 
 interface Props {
     id: number;
@@ -23,14 +24,6 @@ interface Props {
     repository: Repository;
     variables: Variables;
 }
-
-const sort = (a: Branch, b: Branch) => {
-    return (
-        (a.isBaseVersion ? -1 : 1) - (b.isBaseVersion ? -1 : 1) ||
-        new Date(b.commit.committer.date).valueOf() -
-            new Date(a.commit.committer.date).valueOf()
-    );
-};
 
 export const BuildQueue = (props: Props) => {
     const [visible, setVisible] = useState(false);
@@ -52,7 +45,7 @@ export const BuildQueue = (props: Props) => {
                     selectedProject!,
                     props.repository.id
                 )) || []
-            ).sort(sort)
+            ).sort(branchCompare)
         );
         setLoading(false);
 
