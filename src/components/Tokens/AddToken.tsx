@@ -1,5 +1,5 @@
 import React, { useState, useReducer, useEffect } from "react";
-import { Button, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { tryAddOrganization, resetValidation } from "../../utils/Actions";
 import { useSquawk, usePending } from "../../utils/Store";
 import {
@@ -7,7 +7,7 @@ import {
     DialogBody,
     DialogFooterActions
 } from "../Common/Dialog";
-import { WithTooltip } from "../../utils/WithTooltip";
+import { Button } from "../Common/Button";
 
 interface Form {
     name: string;
@@ -72,18 +72,14 @@ export const AddToken = () => {
 
     return (
         <>
-            <WithTooltip
-                element={
-                    <Button
-                        icon="plus"
-                        intent="primary"
-                        onClick={() => {
-                            resetValidation();
-                            setVisible(true);
-                        }}
-                    />
-                }
-                text="Add token"
+            <Button
+                tooltip="Add token"
+                icon="plus"
+                intent="primary"
+                onClick={() => {
+                    resetValidation();
+                    setVisible(true);
+                }}
             />
             <Dialog
                 canEscapeKeyClose={false}

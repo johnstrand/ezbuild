@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Button, Dialog, Classes, HTMLTable } from "@blueprintjs/core";
+import { Dialog, Classes, HTMLTable } from "@blueprintjs/core";
 import { useSquawk } from "../../utils/Store";
 import { Build } from "../../utils/ApiTypes";
 import { BuildHistoryItem } from "./BuildHistoryItem";
-import { WithTooltip } from "../../utils/WithTooltip";
 import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
 import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 import { HTMLTableLoadingDataRow } from "../Common/HTMLTableLoadingDataRow";
+import { Button } from "../Common/Button";
 
 interface Props {
     id: number;
@@ -40,9 +40,10 @@ export const BuildDefinitionHistory = (props: Props) => {
 
     return (
         <>
-            <WithTooltip
-                text="View history"
-                element={<Button icon="history" onClick={loadHistory} />}
+            <Button
+                tooltip="View history"
+                icon="history"
+                onClick={loadHistory}
             />
             <Dialog
                 isOpen={visible}
@@ -53,7 +54,11 @@ export const BuildDefinitionHistory = (props: Props) => {
                     Build history for {props.name}
                 </div>
                 <div className={Classes.DIALOG_BODY}>
-                    <Button icon="refresh" onClick={() => loadHistory()} />
+                    <Button
+                        icon="refresh"
+                        onClick={() => loadHistory()}
+                        tooltip="Refresh"
+                    />
                     <HTMLTable>
                         <HTMLTableSingleHeader>
                             <th>ID</th>

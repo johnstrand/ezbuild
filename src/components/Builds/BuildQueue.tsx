@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-    Button,
     Dialog,
     FormGroup,
     HTMLSelect,
@@ -8,7 +7,6 @@ import {
     Spinner
 } from "@blueprintjs/core";
 import { showToast } from "../../utils/AppToaster";
-import { WithTooltip } from "../../utils/WithTooltip";
 import { Repository, Branch, Variables, Queue } from "../../utils/ApiTypes";
 import { useSquawk } from "../../utils/Store";
 import {
@@ -19,6 +17,7 @@ import {
 import { branchCompare } from "../../utils/Comparers";
 import { convertVariables } from "../../utils/Utils";
 import { HideableNonIdealState, HideableFormGroup } from "../Common/Hidable";
+import { Button } from "../Common/Button";
 
 interface Props {
     id: number;
@@ -91,15 +90,11 @@ export const BuildQueue = (props: Props) => {
 
     return (
         <>
-            <WithTooltip
-                text={`Queue build for ${props.name}`}
-                element={
-                    <Button
-                        icon="play"
-                        intent="primary"
-                        onClick={prepareQueue}
-                    />
-                }
+            <Button
+                icon="play"
+                intent="primary"
+                onClick={prepareQueue}
+                tooltip={`Queue build for ${props.name}`}
             />
             <Dialog
                 isOpen={visible}
