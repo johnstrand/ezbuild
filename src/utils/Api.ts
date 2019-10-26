@@ -33,7 +33,7 @@ async function post<T>(org: OrgSettings, url: string, data?: any) {
         method: "POST",
         mode: "cors",
         headers,
-        body: data ? null : JSON.stringify(data)
+        body: JSON.stringify(data)
     }).then<T>(res => res.json());
     return result;
 }
@@ -120,7 +120,7 @@ export const Api: Api = {
         async trigger(org: OrgSettings, request: BuildRequest) {
             return await post<Build>(
                 org,
-                `${request.project.id}/_apis/build/builds?ignoreWarnings=false`,
+                `${request.project.id}/_apis/build/builds?ignoreWarnings=false&api-version=5.1`,
                 request
             );
         }

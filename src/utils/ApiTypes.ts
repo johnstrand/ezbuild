@@ -30,6 +30,7 @@ export interface BuildDefinition {
     project: Project;
     repository: Repository;
     variables: Variables;
+    queue: Queue;
 }
 
 export interface ValueLinks {

@@ -9,7 +9,7 @@ import {
 } from "@blueprintjs/core";
 import { showToast } from "../../utils/AppToaster";
 import { WithTooltip } from "../../utils/WithTooltip";
-import { Repository, Branch, Variables } from "../../utils/ApiTypes";
+import { Repository, Branch, Variables, Queue } from "../../utils/ApiTypes";
 import { useSquawk } from "../../utils/Store";
 import {
     DialogFooterActions,
@@ -17,10 +17,12 @@ import {
     DialogBody
 } from "../Common/Dialog";
 import { branchCompare } from "../../utils/Comparers";
+import { convertVariables } from "../../utils/Utils";
 
 interface Props {
     id: number;
     name: string;
+    queue: Queue;
     repository: Repository;
     variables: Variables;
 }
@@ -29,10 +31,18 @@ export const BuildQueue = (props: Props) => {
     const [visible, setVisible] = useState(false);
     const [branches, setBranches] = useState<Branch[]>([]);
     const [loading, setLoading] = useState(true);
-    const { repositoryService, selectedOrg, selectedProject } = useSquawk(
+    const {
+        repositoryService,
+        buildService,
+        selectedOrg,
+        selectedProject,
+        projects
+    } = useSquawk(
         "repositoryService",
+        "buildService",
         "selectedOrg",
-        "selectedProject"
+        "selectedProject",
+        "projects"
     );
 
     const prepareQueue = async () => {
@@ -52,7 +62,25 @@ export const BuildQueue = (props: Props) => {
         // TODO: Copy variables into local state and make editable
     };
 
-    const addToQueue = () => {
+    const addToQueue = async () => {
+        const projectId = projects.find(p => p.name === selectedProject)!.id;
+        const request = {
+            queue: {
+                id: props.queue.id
+            },
+            definition: {
+                id: props.id
+            },
+            project: {
+                id: projectId!
+            },
+            sourceBranch: `refs/heads/${branches[0].name}`,
+            sourceVersion: "",
+            reason: 1,
+            demands: [],
+            parameters: JSON.stringify(convertVariables(props.variables))
+        };
+        await buildService.trigger(selectedOrg!, request);
         showToast("Build queued", "success", "cog");
         setVisible(false);
     };

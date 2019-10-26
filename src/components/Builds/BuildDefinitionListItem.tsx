@@ -25,6 +25,7 @@ export const BuildDefinitionListItem = ({ definition }: Props) => {
                         name={definition.name}
                         repository={definition.repository}
                         variables={definition.variables}
+                        queue={definition.queue}
                     />
                 </ButtonGroup>
             </td>
