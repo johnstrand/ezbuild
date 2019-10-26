@@ -7,6 +7,9 @@ export const useDateFormat = (date: string) => {
 
 export const convertVariables = (vars: Variables) => {
     const output: { [key: string]: any } = {};
+    if (!vars) {
+        return output;
+    }
     for (const key of Object.keys(vars)) {
         output[key] = vars[key].value;
     }
