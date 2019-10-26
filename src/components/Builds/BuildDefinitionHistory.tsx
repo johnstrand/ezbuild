@@ -6,6 +6,7 @@ import { BuildHistoryItem } from "./BuildHistoryItem";
 import { WithTooltip } from "../../utils/WithTooltip";
 import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
 import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
+import { HTMLTableLoadingDataRow } from "../Common/HTMLTableLoadingDataRow";
 
 interface Props {
     id: number;
@@ -14,6 +15,7 @@ interface Props {
 
 export const BuildDefinitionHistory = (props: Props) => {
     const [visible, setVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [list, setList] = useState<Build[]>([]);
 
@@ -25,11 +27,14 @@ export const BuildDefinitionHistory = (props: Props) => {
 
     const loadHistory = async () => {
         setVisible(true);
+        setLoading(true);
+        setList([]);
         const history = await buildService.listHistory(
             selectedOrg!,
             selectedProject!,
             props.id
         );
+        setLoading(false);
         setList(history);
     };
 
@@ -48,6 +53,7 @@ export const BuildDefinitionHistory = (props: Props) => {
                     Build history for {props.name}
                 </div>
                 <div className={Classes.DIALOG_BODY}>
+                    <Button icon="refresh" onClick={() => loadHistory()} />
                     <HTMLTable>
                         <HTMLTableSingleHeader>
                             <th>ID</th>
@@ -57,9 +63,14 @@ export const BuildDefinitionHistory = (props: Props) => {
                             <th>Branch</th>
                         </HTMLTableSingleHeader>
                         <tbody>
+                            <HTMLTableLoadingDataRow
+                                columns={5}
+                                visible={loading}
+                                size={100}
+                            />
                             <HTMLTableNoDataRow
                                 columns={5}
-                                visible={list.length === 0}
+                                visible={!loading && list.length === 0}
                                 text="Found no previous builds"
                             />
                             {list.map(item => (
