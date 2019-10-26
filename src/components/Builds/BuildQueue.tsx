@@ -105,6 +105,11 @@ export const BuildQueue = (props: Props) => {
                 <DialogHeader content={`Queue new build for ${props.name}`} />
                 <DialogBody>
                     {loading && <Spinner size={Spinner.SIZE_LARGE} />}
+                    {!loading && branches.length === 0 && (
+                        <div>
+                            Unable to load branches
+                        </div> /* TODO: Better error handling here */
+                    )}
                     <FormGroup label="Branch" labelFor="branches">
                         <HTMLSelect id="branches" fill>
                             {branches.map(branch => (
@@ -125,8 +130,9 @@ export const BuildQueue = (props: Props) => {
                                 id={`var_${key}`}
                                 data-lpignore="true"
                                 autoComplete="off"
-                                readOnly={!props.variables[key].allowOverride}
+                                readOnly={true} // Should actually check if override is allowed
                                 value={props.variables[key].value}
+                                onChange={() => {}} // Read-only for now
                             />
                         </FormGroup>
                     ))}
