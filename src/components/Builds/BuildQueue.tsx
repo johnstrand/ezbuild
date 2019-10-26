@@ -18,6 +18,7 @@ import {
 } from "../Common/Dialog";
 import { branchCompare } from "../../utils/Comparers";
 import { convertVariables } from "../../utils/Utils";
+import { HideableNonIdealState, HideableFormGroup } from "../Common/Hidable";
 
 interface Props {
     id: number;
@@ -105,12 +106,15 @@ export const BuildQueue = (props: Props) => {
                 <DialogHeader content={`Queue new build for ${props.name}`} />
                 <DialogBody>
                     {loading && <Spinner size={Spinner.SIZE_LARGE} />}
-                    {!loading && branches.length === 0 && (
-                        <div>
-                            Unable to load branches
-                        </div> /* TODO: Better error handling here */
-                    )}
-                    <FormGroup label="Branch" labelFor="branches">
+                    <HideableNonIdealState
+                        hidden={loading || branches.length > 0}
+                        title="No branches found"
+                    />
+                    <HideableFormGroup
+                        label="Branch"
+                        labelFor="branches"
+                        hidden={loading || branches.length === 0}
+                    >
                         <HTMLSelect id="branches" fill>
                             {branches.map(branch => (
                                 <option key={branch.name}>
@@ -119,23 +123,25 @@ export const BuildQueue = (props: Props) => {
                                 </option>
                             ))}
                         </HTMLSelect>
-                    </FormGroup>
-                    {Object.keys(props.variables || {}).map(key => (
-                        <FormGroup
-                            key={key}
-                            label={key}
-                            labelFor={`var_${key}`}
-                        >
-                            <InputGroup
-                                id={`var_${key}`}
-                                data-lpignore="true"
-                                autoComplete="off"
-                                readOnly={true} // Should actually check if override is allowed
-                                value={props.variables[key].value}
-                                onChange={() => {}} // Read-only for now
-                            />
-                        </FormGroup>
-                    ))}
+                    </HideableFormGroup>
+                    {!loading &&
+                        branches.length > 0 &&
+                        Object.keys(props.variables || {}).map(key => (
+                            <FormGroup
+                                key={key}
+                                label={key}
+                                labelFor={`var_${key}`}
+                            >
+                                <InputGroup
+                                    id={`var_${key}`}
+                                    data-lpignore="true"
+                                    autoComplete="off"
+                                    readOnly={true} // Should actually check if override is allowed
+                                    value={props.variables[key].value}
+                                    onChange={() => {}} // Read-only for now
+                                />
+                            </FormGroup>
+                        ))}
                 </DialogBody>
                 <DialogFooterActions>
                     <Button text="Cancel" onClick={() => setVisible(false)} />
