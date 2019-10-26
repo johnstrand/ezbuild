@@ -5,7 +5,8 @@ import {
     Classes,
     FormGroup,
     HTMLSelect,
-    InputGroup
+    InputGroup,
+    Spinner
 } from "@blueprintjs/core";
 import { AppToaster } from "../../utils/AppToaster";
 import { WithTooltip } from "../../utils/WithTooltip";
@@ -35,6 +36,7 @@ const sort = (a: Branch, b: Branch) => {
 export const BuildQueue = (props: Props) => {
     const [visible, setVisible] = useState(false);
     const [branches, setBranches] = useState<Branch[]>([]);
+    const [loading, setLoading] = useState(true);
     const { repositoryService, selectedOrg, selectedProject } = useSquawk(
         "repositoryService",
         "selectedOrg",
@@ -43,6 +45,7 @@ export const BuildQueue = (props: Props) => {
 
     const prepareQueue = async () => {
         setVisible(true);
+        setLoading(true);
         setBranches(
             (
                 (await repositoryService.listBranches(
@@ -52,6 +55,7 @@ export const BuildQueue = (props: Props) => {
                 )) || []
             ).sort(sort)
         );
+        setLoading(false);
 
         // TODO: Copy variables into local state and make editable
     };
@@ -85,6 +89,7 @@ export const BuildQueue = (props: Props) => {
             >
                 <DialogHeader content={`Queue new build for ${props.name}`} />
                 <DialogBody>
+                    {loading && <Spinner size={Spinner.SIZE_LARGE} />}
                     <FormGroup label="Branch" labelFor="branches">
                         <HTMLSelect id="branches" fill>
                             {branches.map(branch => (
