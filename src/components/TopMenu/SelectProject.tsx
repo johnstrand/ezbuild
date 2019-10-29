@@ -6,12 +6,16 @@ import {
 } from "../../utils/Actions";
 
 export const SelectProject = () => {
-    const { projects, selectedOrg } = useSquawk("projects", "selectedOrg");
+    const { projects, tenantId, organizationId } = useSquawk(
+        "projects",
+        "tenantId",
+        "organizationId"
+    );
     //const loading = usePending("projects");
 
     const selectProject = (project: string) => {
-        listBuildDefinitions({ settings: selectedOrg!, project });
-        listReleaseDefinitions({ settings: selectedOrg!, project });
+        /*listBuildDefinitions({ tenantId: selectedOrg!, project });
+        listReleaseDefinitions({ tenantId: selectedOrg!, project });*/
     };
 
     return (

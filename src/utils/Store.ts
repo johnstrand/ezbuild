@@ -1,6 +1,10 @@
 import createStore from "./Squawk"; //"squawk-react";
-import { OrgSettingsCollection, patStore, OrgSettings } from "./PatStore";
-import { Project, BuildDefinition, AzureTenant } from "./ApiTypes";
+import {
+    Project,
+    BuildDefinition,
+    AzureTenant,
+    Organization
+} from "./ApiTypes";
 import {
     Api,
     ProjectService,
@@ -16,12 +20,12 @@ import { getAccount } from "./Auth";
 interface AppState {
     authority: string;
     tenants: AzureTenant[];
+    tenantId: string | null;
     account: Account;
-    orgs: OrgSettingsCollection;
-    selectedOrg: OrgSettings | null;
-    validToken: boolean;
+    organizations: Organization[];
+    organizationId: string | null;
     projects: Project[];
-    selectedProject: string | null;
+    projectId: string | null;
     buildDefinitions: BuildDefinition[];
     projectService: ProjectService;
     buildService: BuildService;
@@ -31,17 +35,22 @@ interface AppState {
     accountService: AccountService;
 }
 
-export const { action, useSquawk, pending, usePending, update } = createStore<
-    AppState
->({
+export const {
+    action,
+    useSquawk,
+    pending,
+    usePending,
+    update,
+    get: getStoreValue
+} = createStore<AppState>({
     authority: "common",
     tenants: [],
+    tenantId: null,
     account: getAccount(),
-    orgs: patStore.get(),
-    selectedOrg: patStore.first(),
-    validToken: false,
+    organizations: [],
+    organizationId: null,
     projects: [],
-    selectedProject: null,
+    projectId: null,
     buildDefinitions: [],
     projectService: Api.projects,
     buildService: Api.builds,

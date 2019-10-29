@@ -35,15 +35,17 @@ export const BuildQueue = (props: Props) => {
     const {
         repositoryService,
         buildService,
-        selectedOrg,
-        selectedProject,
+        tenantId,
+        organizationId,
+        projectId,
         projects
     } = useSquawk(
         "repositoryService",
         "buildService",
-        "selectedOrg",
-        "selectedProject",
-        "projects"
+        "organizationId",
+        "projectId",
+        "projects",
+        "tenantId"
     );
 
     const prepareQueue = async () => {
@@ -51,8 +53,9 @@ export const BuildQueue = (props: Props) => {
         setLoading(true);
         const b = (
             (await repositoryService.listBranches(
-                selectedOrg!,
-                selectedProject!,
+                tenantId!,
+                organizationId!,
+                projectId!,
                 props.repository.id
             )) || []
         ).sort(branchCompare);
@@ -66,7 +69,6 @@ export const BuildQueue = (props: Props) => {
     };
 
     const addToQueue = async () => {
-        const projectId = projects.find(p => p.name === selectedProject)!.id;
         const request = {
             queue: {
                 id: props.queue.id
@@ -83,7 +85,7 @@ export const BuildQueue = (props: Props) => {
             demands: [],
             parameters: JSON.stringify(convertVariables(props.variables))
         };
-        await buildService.trigger(selectedOrg!, request);
+        await buildService.trigger(tenantId!, organizationId!, request);
         showToast("Build queued", "success", "cog");
         setVisible(false);
     };

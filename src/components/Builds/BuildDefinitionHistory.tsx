@@ -19,10 +19,11 @@ export const BuildDefinitionHistory = (props: Props) => {
 
     const [list, setList] = useState<Build[]>([]);
 
-    const { buildService, selectedOrg, selectedProject } = useSquawk(
+    const { buildService, organizationId, projectId, tenantId } = useSquawk(
         "buildService",
-        "selectedOrg",
-        "selectedProject"
+        "organizationId",
+        "projectId",
+        "tenantId"
     );
 
     const loadHistory = async () => {
@@ -30,8 +31,9 @@ export const BuildDefinitionHistory = (props: Props) => {
         setLoading(true);
         setList([]);
         const history = await buildService.listHistory(
-            selectedOrg!,
-            selectedProject!,
+            tenantId!,
+            organizationId!,
+            projectId!,
             props.id
         );
         setLoading(false);

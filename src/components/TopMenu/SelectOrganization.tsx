@@ -1,21 +1,28 @@
 import React from "react";
-import { useSquawk } from "../../utils/Store";
+import { useSquawk, usePending } from "../../utils/Store";
 import { listProjects } from "../../utils/Actions";
 
 export const SelectOrganization = () => {
-    const { orgs } = useSquawk("orgs");
+    const { organizations, tenantId } = useSquawk("organizations", "tenantId");
+    const loading = usePending("organizations");
 
-    const selectOrg = (id: string) => {
-        const org = orgs[id];
-        listProjects(org);
+    const selectOrg = (organizationId: string) => {
+        listProjects({ tenantId: tenantId!, organizationId });
     };
+
+    if (organizations.length === 0 && !loading) {
+        return <div>No Azure DevOps organisations found in tenant</div>;
+    }
 
     return (
         <div className="bp3-select">
             <select onChange={ev => selectOrg(ev.currentTarget.value)}>
-                {Object.keys(orgs).map(k => (
-                    <option key={k} value={k}>
-                        {orgs[k].alias}
+                {organizations.map(organization => (
+                    <option
+                        key={organization.accountId}
+                        value={organization.accountName}
+                    >
+                        {organization.accountName}
                     </option>
                 ))}
             </select>

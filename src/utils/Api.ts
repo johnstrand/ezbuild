@@ -1,4 +1,3 @@
-import { OrgSettings } from "./PatStore";
 import {
     ResponseList,
     Project,
@@ -11,17 +10,20 @@ import {
     Organization
 } from "./ApiTypes";
 import { getToken, scopes } from "./Auth";
+import { getStoreValue } from "./Store";
 
-function getHeaders(pat: string) {
+async function getHeaders(tenantId: string) {
+    const token = await getToken(tenantId, scopes.devops);
     return {
-        Authorization: `Basic ${pat}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
     };
 }
 
-async function get<T>(org: OrgSettings, url: string) {
-    const endpoint = `https://dev.azure.com/${org.name}/${url}`;
-    const headers = getHeaders(org.pat);
+async function get<T>(tenantId: string, organizationId: string, url: string) {
+    console.log("GET", tenantId, organizationId, url);
+    const endpoint = `https://dev.azure.com/${organizationId}/${url}`;
+    const headers = await getHeaders(tenantId);
     const result = await fetch(endpoint, {
         method: "GET",
         mode: "cors",
@@ -30,9 +32,13 @@ async function get<T>(org: OrgSettings, url: string) {
     return result;
 }
 
-async function getVsrm<T>(org: OrgSettings, url: string) {
-    const endpoint = `https://vsrm.dev.azure.com/${org.name}/${url}`;
-    const headers = getHeaders(org.pat);
+async function getVsrm<T>(
+    tenantId: string,
+    organizationId: string,
+    url: string
+) {
+    const endpoint = `https://vsrm.dev.azure.com/${organizationId}/${url}`;
+    const headers = await getHeaders(tenantId);
     const result = await fetch(endpoint, {
         method: "GET",
         mode: "cors",
@@ -41,9 +47,14 @@ async function getVsrm<T>(org: OrgSettings, url: string) {
     return result;
 }
 
-async function post<T>(org: OrgSettings, url: string, data?: any) {
-    const endpoint = `https://dev.azure.com/${org.name}/${url}`;
-    const headers = getHeaders(org.pat);
+async function post<T>(
+    tenantId: string,
+    organizationId: string,
+    url: string,
+    data?: any
+) {
+    const endpoint = `https://dev.azure.com/${organizationId}/${url}`;
+    const headers = await getHeaders(tenantId);
     const result = await fetch(endpoint, {
         method: "POST",
         mode: "cors",
@@ -54,7 +65,7 @@ async function post<T>(org: OrgSettings, url: string, data?: any) {
 }
 
 export interface ProjectService {
-    list(org: OrgSettings): Promise<Project[]>;
+    list(tenantId: string, organizationId: string): Promise<Project[]>;
 }
 
 export interface ProfileService {
@@ -67,21 +78,28 @@ export interface AccountService {
 
 export interface BuildService {
     listDefinitions(
-        org: OrgSettings,
+        tenantId: string,
+        organizationId: string,
         project: string
     ): Promise<BuildDefinition[]>;
     listHistory(
-        org: OrgSettings,
+        tenantId: string,
+        organizationId: string,
         project: string,
         buildDefinitionId: number
     ): Promise<Build[]>;
-    trigger(org: OrgSettings, request: BuildRequest): Promise<Build>;
+    trigger(
+        tenantId: string,
+        organizationId: string,
+        request: BuildRequest
+    ): Promise<Build>;
 }
 
 export interface RepositoryService {
     listRepositories(): void; // GET https://dev.azure.com/{organization}/{project}/_apis/git/repositories?api-version=5.1
     listBranches(
-        org: OrgSettings,
+        tenantId: string,
+        organizationId: string,
         project: string,
         repository: string
     ): Promise<Branch[]>;
@@ -89,7 +107,8 @@ export interface RepositoryService {
 
 export interface ReleaseService {
     listDefinitions(
-        org: OrgSettings,
+        tenantId: string,
+        organizationId: string,
         project: string
     ): Promise<ReleaseDefinition[]>;
 }
@@ -106,6 +125,7 @@ export interface Api {
 export const Api: Api = {
     profile: {
         async get(tenantId: string) {
+            console.log("Get-Profile", tenantId);
             const token = await getToken(tenantId, scopes.devops);
             const response = await fetch(
                 "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=5.1",
@@ -123,6 +143,7 @@ export const Api: Api = {
     },
     account: {
         async listAccounts(tenantId: string, profileId: string) {
+            console.log("Get-Accounts", tenantId, profileId);
             const token = await getToken(tenantId, scopes.devops);
             const response = await fetch(
                 `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${profileId}&api-version=5.1`,
@@ -143,12 +164,14 @@ export const Api: Api = {
     repository: {
         listRepositories() {},
         async listBranches(
-            org: OrgSettings,
+            tenantId: string,
+            organizationId: string,
             project: string,
             repository: string
         ) {
             const result = await get<ResponseList<Branch>>(
-                org,
+                tenantId,
+                organizationId,
                 `${project}/_apis/git/repositories/${repository}/stats/branches?api-version=5.1`
             );
 
@@ -156,9 +179,10 @@ export const Api: Api = {
         }
     },
     projects: {
-        async list(org: OrgSettings) {
+        async list(tenantId: string, organizationId: string) {
             const response = await get<ResponseList<Project>>(
-                org,
+                tenantId,
+                organizationId,
                 `_apis/projects?api-version=5.1`
             );
 
@@ -166,38 +190,55 @@ export const Api: Api = {
         }
     },
     builds: {
-        async listDefinitions(org: OrgSettings, project: string) {
+        async listDefinitions(
+            tenantId: string,
+            organizationId: string,
+            project: string
+        ) {
             const response = await get<ResponseList<BuildDefinition>>(
-                org,
+                tenantId,
+                organizationId,
                 `${project}/_apis/build/definitions?includeAllProperties=true&api-version=5.1`
             );
 
             return response.value;
         },
         async listHistory(
-            org: OrgSettings,
+            tenantId: string,
+            organizationId: string,
             project: string,
             buildDefinitionId: number
         ) {
             const response = await get<ResponseList<Build>>(
-                org,
+                tenantId,
+                organizationId,
                 `${project}/_apis/build/builds?definitions=${buildDefinitionId}&api-version=5.1`
             );
 
             return response.value;
         },
-        async trigger(org: OrgSettings, request: BuildRequest) {
+        async trigger(
+            tenantId: string,
+            organizationId: string,
+            request: BuildRequest
+        ) {
             return await post<Build>(
-                org,
+                tenantId,
+                organizationId,
                 `${request.project.id}/_apis/build/builds?ignoreWarnings=false&api-version=5.1`,
                 request
             );
         }
     },
     release: {
-        async listDefinitions(org: OrgSettings, project: string) {
+        async listDefinitions(
+            tenantId: string,
+            organizationId: string,
+            project: string
+        ) {
             const result = await getVsrm<ResponseList<ReleaseDefinition>>(
-                org,
+                tenantId,
+                organizationId,
                 `${project}/_apis/release/definitions?api-version=5.1`
             );
 
