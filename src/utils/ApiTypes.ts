@@ -3,6 +3,32 @@ export interface ResponseList<T> {
     value: T[];
 }
 
+export interface AzureTenant {
+    id: string;
+    tenantId: string;
+    countryCode: string;
+    displayName: string;
+    domains: string[];
+    tenantCategory: string;
+}
+
+export interface Profile {
+    displayName: string;
+    publicAlias: string;
+    emailAddress: string;
+    coreRevision: number;
+    timeStamp: string;
+    id: string;
+    revision: number;
+}
+
+export interface Organization {
+    accountId: string;
+    accountUri: string;
+    accountName: string;
+    properties: any;
+}
+
 export interface Project {
     id: string;
     name: string;

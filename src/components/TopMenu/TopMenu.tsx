@@ -5,9 +5,9 @@ import {
     NavbarHeading,
     NavbarDivider
 } from "@blueprintjs/core";
-import { TokenList } from "../Tokens/TokenList";
 import { SelectOrganization } from "./SelectOrganization";
 import { SelectProject } from "./SelectProject";
+import { SelectTenant } from "./SelectTenant";
 
 export const TopMenu = () => {
     return (
@@ -15,7 +15,7 @@ export const TopMenu = () => {
             <NavbarGroup>
                 <NavbarHeading>ez-build</NavbarHeading>
                 <NavbarDivider />
-                <TokenList />
+                <SelectTenant />
                 <NavbarDivider />
                 <SelectOrganization />
                 <NavbarDivider />

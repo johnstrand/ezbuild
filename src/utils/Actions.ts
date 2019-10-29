@@ -3,6 +3,23 @@ import { action, pending } from "./Store";
 import { OrgSettings, patStore } from "./PatStore";
 import { showToast } from "./AppToaster";
 import { Project } from "./ApiTypes";
+import { getTenants, getAccount } from "./Auth";
+
+export const listTenants = action(async _ => {
+    pending("tenants", true);
+    const tenants = await getTenants();
+    if (tenants.length > 0) {
+        listOrganizations(tenants[0].tenantId);
+    }
+    pending("tenants", false);
+    return { tenants, account: getAccount() };
+});
+
+export const listOrganizations = action<string>(async (state, tenantId) => {
+    const profile = await state.profileService.get(tenantId);
+    await state.accountService.listAccounts(tenantId, profile.id);
+    return {};
+});
 
 export const resetValidation = action(_ => {
     return { validToken: false };
@@ -113,4 +130,8 @@ export const listBuildDefinitions = action<{
 
 if (!patStore.empty()) {
     listProjects(patStore.first()!);
+}
+
+if (getAccount()) {
+    listTenants();
 }

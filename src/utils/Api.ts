@@ -6,8 +6,11 @@ import {
     Build,
     BuildRequest,
     Branch,
-    ReleaseDefinition
+    ReleaseDefinition,
+    Profile,
+    Organization
 } from "./ApiTypes";
+import { getToken, scopes } from "./Auth";
 
 function getHeaders(pat: string) {
     return {
@@ -54,6 +57,14 @@ export interface ProjectService {
     list(org: OrgSettings): Promise<Project[]>;
 }
 
+export interface ProfileService {
+    get(tenantId: string): Promise<Profile>;
+}
+
+export interface AccountService {
+    listAccounts(tenantId: string, profileId: string): Promise<Organization[]>;
+}
+
 export interface BuildService {
     listDefinitions(
         org: OrgSettings,
@@ -84,6 +95,8 @@ export interface ReleaseService {
 }
 
 export interface Api {
+    profile: ProfileService;
+    account: AccountService;
     projects: ProjectService;
     builds: BuildService;
     repository: RepositoryService;
@@ -91,6 +104,42 @@ export interface Api {
 }
 
 export const Api: Api = {
+    profile: {
+        async get(tenantId: string) {
+            const token = await getToken(tenantId, scopes.devops);
+            const response = await fetch(
+                "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=5.1",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            const profile = (await response.json()) as Profile;
+
+            return profile;
+        }
+    },
+    account: {
+        async listAccounts(tenantId: string, profileId: string) {
+            const token = await getToken(tenantId, scopes.devops);
+            const response = await fetch(
+                `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${profileId}&api-version=5.1`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            const organizations = ((await response.json()) as ResponseList<
+                Organization
+            >).value;
+
+            return organizations;
+        }
+    },
     repository: {
         listRepositories() {},
         async listBranches(
