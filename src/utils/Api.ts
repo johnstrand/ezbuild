@@ -45,6 +45,18 @@ async function getVsrm<T>(
     return result;
 }
 
+async function getVssp<T>(tenantId: string, url: string) {
+    const token = await getToken(tenantId, scopes.devops);
+    const response = await fetch(`https://app.vssps.visualstudio.com/${url}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const result = (await response.json()) as T;
+    return result;
+}
+
 async function post<T>(
     tenantId: string,
     organizationId: string,
@@ -123,38 +135,19 @@ export interface Api {
 export const Api: Api = {
     profile: {
         async get(tenantId: string) {
-            const token = await getToken(tenantId, scopes.devops);
-            const response = await fetch(
-                "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=5.1",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
+            return await getVssp(
+                tenantId,
+                "_apis/profile/profiles/me?api-version=5.1"
             );
-
-            const profile = (await response.json()) as Profile;
-
-            return profile;
         }
     },
     account: {
         async listAccounts(tenantId: string, profileId: string) {
-            const token = await getToken(tenantId, scopes.devops);
-            const response = await fetch(
-                `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${profileId}&api-version=5.1`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
+            const response = await getVssp<ResponseList<Organization>>(
+                tenantId,
+                `_apis/accounts?memberId=${profileId}&api-version=5.1`
             );
-
-            const organizations = ((await response.json()) as ResponseList<
-                Organization
-            >).value;
-
-            return organizations;
+            return response.value;
         }
     },
     repository: {
