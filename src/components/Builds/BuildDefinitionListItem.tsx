@@ -1,7 +1,7 @@
 import React from "react";
 import { BuildDefinition } from "../../utils/ApiTypes";
 import { ButtonGroup } from "@blueprintjs/core";
-import { BuildDefinitionHistory } from "./BuildDefinitionHistory";
+import { BuildHistoryList } from "./BuildHistoryList";
 import { BuildQueue } from "./BuildQueue";
 
 interface Props {
@@ -16,7 +16,7 @@ export const BuildDefinitionListItem = ({ definition }: Props) => {
             <td>{definition.repository.name}</td>
             <td>
                 <ButtonGroup>
-                    <BuildDefinitionHistory
+                    <BuildHistoryList
                         id={definition.id}
                         name={definition.name}
                     />

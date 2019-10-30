@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Dialog, Classes, HTMLTable } from "@blueprintjs/core";
 import { useSquawk } from "../../utils/Store";
 import { Build } from "../../utils/ApiTypes";
-import { BuildHistoryItem } from "./BuildHistoryItem";
+import { BuildHistoryListItem } from "./BuildHistoryListItem";
 import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
 import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 import { HTMLTableLoadingDataRow } from "../Common/HTMLTableLoadingDataRow";
@@ -13,7 +13,7 @@ interface Props {
     name: string;
 }
 
-export const BuildDefinitionHistory = (props: Props) => {
+export const BuildHistoryList = (props: Props) => {
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -81,7 +81,10 @@ export const BuildDefinitionHistory = (props: Props) => {
                                 text="Found no previous builds"
                             />
                             {list.map(item => (
-                                <BuildHistoryItem key={item.id} item={item} />
+                                <BuildHistoryListItem
+                                    key={item.id}
+                                    item={item}
+                                />
                             ))}
                         </tbody>
                     </HTMLTable>
