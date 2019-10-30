@@ -40,6 +40,7 @@ export const listTenants = action(async state => {
 });
 
 export const listOrganizations = action<string>(async (state, tenantId) => {
+    window.location.hash = tenantId;
     pending(["organizations", "projects", "buildDefinitions"], true);
     const profile = await state.profileService.get(tenantId);
     const organizations = await state.accountService.listAccounts(
@@ -65,6 +66,7 @@ export const listProjects = action<{
     tenantId: string;
     organizationId: string;
 }>(async ({ projectService }, { tenantId, organizationId }) => {
+    window.location.hash = [tenantId, organizationId].join("/");
     pending(["projects", "buildDefinitions"], true);
     try {
         const projects = await projectService.list(tenantId, organizationId);
@@ -74,11 +76,13 @@ export const listProjects = action<{
                 organizationId,
                 project: projects[0].name
             });
+            /*
             listReleaseDefinitions({
                 tenantId,
                 organizationId,
                 project: projects[0].name
             });
+            */
         }
         return {
             tenantId,
@@ -107,6 +111,9 @@ export const listBuildDefinitions = action<{
     organizationId: string;
     project: string;
 }>(async ({ buildService }, { tenantId, organizationId, project }) => {
+    window.location.hash = [tenantId, organizationId, project, "builds"].join(
+        "/"
+    );
     pending(["buildDefinitions"], true);
     const buildDefinitions = await buildService.listDefinitions(
         tenantId,

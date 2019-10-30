@@ -37,14 +37,12 @@ export const BuildQueue = (props: Props) => {
         buildService,
         tenantId,
         organizationId,
-        projectId,
-        projects
+        projectId
     } = useSquawk(
         "repositoryService",
         "buildService",
         "organizationId",
         "projectId",
-        "projects",
         "tenantId"
     );
 

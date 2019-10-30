@@ -7,14 +7,20 @@ export const MainPage = () => {
         location: { hash }
     } = window;
 
-    const [selected, setSelected] = useState(hash || "#builds");
+    const pathSegments = (hash || "builds").split("/");
+
+    const [selected, setSelected] = useState(
+        "#" + pathSegments[pathSegments.length - 1]
+    );
 
     return (
         <Tabs
             selectedTabId={selected}
             onChange={id => {
-                window.location.hash = id.toString();
                 setSelected(id.toString());
+                const pathSegs = window.location.hash.split("/");
+                pathSegs[pathSegs.length - 1] = id.toString().substr(1);
+                window.location.hash = pathSegs.join("/");
             }}
         >
             <Tab id="#builds" title="Builds" panel={<BuildDefinitionList />} />
