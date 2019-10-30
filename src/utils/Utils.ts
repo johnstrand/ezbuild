@@ -2,7 +2,10 @@ import { useMemo } from "react";
 import { Variables } from "./ApiTypes";
 
 export const useDateFormat = (date: string) => {
-    return useMemo(() => new Date(date).toLocaleString("sv-SE"), [date]);
+    return useMemo(
+        () => (!!date ? new Date(date).toLocaleString("sv-SE") : ""),
+        [date]
+    );
 };
 
 export const convertVariables = (vars: Variables) => {

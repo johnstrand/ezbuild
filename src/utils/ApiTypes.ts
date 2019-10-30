@@ -91,7 +91,7 @@ export interface Build {
     triggerInfo: any;
     id: number;
     buildNumber: string;
-    status: string;
+    status: BuildStatus;
     result: BuildResult;
     queueTime: string;
     startTime: string;
@@ -177,6 +177,15 @@ export enum Reason {
     Manual = "manual",
     Schedule = "schedule"
 }
+
+export type BuildStatus =
+    | "all"
+    | "cancelling"
+    | "completed"
+    | "inProgress"
+    | "none"
+    | "notStarted"
+    | "postponed";
 
 export type BuildResult =
     | "canceled"

@@ -29,7 +29,7 @@ export const SelectProject = () => {
 
     const items = projects.map(p => ({
         key: p.id,
-        value: p.name,
+        value: p.id,
         text: p.name
     }));
 

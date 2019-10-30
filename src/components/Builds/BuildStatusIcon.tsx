@@ -1,13 +1,29 @@
 import React from "react";
-import { BuildResult } from "../../utils/ApiTypes";
+import { BuildResult, BuildStatus } from "../../utils/ApiTypes";
 import { Icon } from "@blueprintjs/core";
 import { WithTooltip } from "../Common/WithTooltip";
 
 interface Props {
     result: BuildResult;
+    status: BuildStatus;
 }
 
-export const BuildResultIcon = ({ result }: Props) => {
+export const BuildStatusIcon = ({ result, status }: Props) => {
+    if (status !== "completed") {
+        const statusIcon =
+            status === "cancelling"
+                ? "stop"
+                : status === "inProgress"
+                ? "play"
+                : status === "notStarted"
+                ? "time"
+                : undefined;
+
+        return (
+            <WithTooltip text={status} element={<Icon icon={statusIcon} />} />
+        );
+    }
+
     const icon =
         result === "failed"
             ? "error"
