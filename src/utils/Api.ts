@@ -92,6 +92,11 @@ export interface BuildService {
         organizationId: string,
         project: string
     ): Promise<BuildDefinition[]>;
+    listBuilds(
+        tenantId: string,
+        organizationId: string,
+        project: string
+    ): Promise<Build[]>;
     listHistory(
         tenantId: string,
         organizationId: string,
@@ -187,7 +192,20 @@ export const Api: Api = {
             const response = await get<ResponseList<BuildDefinition>>(
                 tenantId,
                 organizationId,
-                `${project}/_apis/build/definitions?includeAllProperties=true&api-version=5.1`
+                `${project}/_apis/build/definitions?includeAllProperties=true&includeLatestBuilds=true&api-version=5.1`
+            );
+
+            return response.value;
+        },
+        async listBuilds(
+            tenantId: string,
+            organizationId: string,
+            project: string
+        ) {
+            const response = await get<ResponseList<Build>>(
+                tenantId,
+                organizationId,
+                `${project}/_apis/build/builds?maxBuildsPerDefinition=1&deletedFilter=excludeDeleted&api-version=5.1`
             );
 
             return response.value;

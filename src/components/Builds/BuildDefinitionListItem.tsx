@@ -3,6 +3,7 @@ import { BuildDefinition } from "../../utils/ApiTypes";
 import { ButtonGroup } from "@blueprintjs/core";
 import { BuildHistoryList } from "./BuildHistoryList";
 import { BuildQueue } from "./BuildQueue";
+import { BuildStatusIcon } from "./BuildStatusIcon";
 
 interface Props {
     definition: BuildDefinition;
@@ -14,6 +15,14 @@ export const BuildDefinitionListItem = ({ definition }: Props) => {
             <td>{definition.name}</td>
             <td>{definition.path}</td>
             <td>{definition.repository.name}</td>
+            <td>
+                {definition.latestBuild && (
+                    <BuildStatusIcon
+                        result={definition.latestBuild.result}
+                        status={definition.latestBuild.status}
+                    />
+                )}
+            </td>
             <td>
                 <ButtonGroup>
                     <BuildHistoryList

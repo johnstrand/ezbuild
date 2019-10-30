@@ -57,6 +57,7 @@ export interface BuildDefinition {
     repository: Repository;
     variables: Variables;
     queue: Queue;
+    latestBuild: Build;
 }
 
 export interface ValueLinks {
