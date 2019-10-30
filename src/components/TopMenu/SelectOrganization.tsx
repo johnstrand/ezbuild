@@ -1,6 +1,7 @@
 import React from "react";
 import { useSquawk, usePending } from "../../utils/Store";
 import { listProjects } from "../../utils/Actions";
+import { Dropdown } from "../Common/Dropdown";
 
 export const SelectOrganization = () => {
     const { organizations, tenantId } = useSquawk("organizations", "tenantId");
@@ -10,22 +11,18 @@ export const SelectOrganization = () => {
         listProjects({ tenantId: tenantId!, organizationId });
     };
 
-    if (organizations.length === 0 && !loading) {
-        return <div>No Azure DevOps organisations found in tenant</div>;
-    }
+    const items = organizations.map(o => ({
+        key: o.accountId,
+        value: o.accountName,
+        text: o.accountName
+    }));
 
     return (
-        <div className="bp3-select">
-            <select onChange={ev => selectOrg(ev.currentTarget.value)}>
-                {organizations.map(organization => (
-                    <option
-                        key={organization.accountId}
-                        value={organization.accountName}
-                    >
-                        {organization.accountName}
-                    </option>
-                ))}
-            </select>
-        </div>
+        <Dropdown<string>
+            loading={loading}
+            items={items}
+            onChange={selectOrg}
+            noData="No Azure DevOps organizations found in tenant"
+        />
     );
 };

@@ -10,7 +10,6 @@ import {
     Organization
 } from "./ApiTypes";
 import { getToken, scopes } from "./Auth";
-import { getStoreValue } from "./Store";
 
 async function getHeaders(tenantId: string) {
     const token = await getToken(tenantId, scopes.devops);
@@ -21,7 +20,6 @@ async function getHeaders(tenantId: string) {
 }
 
 async function get<T>(tenantId: string, organizationId: string, url: string) {
-    console.log("GET", tenantId, organizationId, url);
     const endpoint = `https://dev.azure.com/${organizationId}/${url}`;
     const headers = await getHeaders(tenantId);
     const result = await fetch(endpoint, {
@@ -125,7 +123,6 @@ export interface Api {
 export const Api: Api = {
     profile: {
         async get(tenantId: string) {
-            console.log("Get-Profile", tenantId);
             const token = await getToken(tenantId, scopes.devops);
             const response = await fetch(
                 "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=5.1",
@@ -143,7 +140,6 @@ export const Api: Api = {
     },
     account: {
         async listAccounts(tenantId: string, profileId: string) {
-            console.log("Get-Accounts", tenantId, profileId);
             const token = await getToken(tenantId, scopes.devops);
             const response = await fetch(
                 `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${profileId}&api-version=5.1`,

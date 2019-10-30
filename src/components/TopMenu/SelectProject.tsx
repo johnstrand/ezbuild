@@ -1,9 +1,10 @@
 import React from "react";
-import { useSquawk } from "../../utils/Store";
+import { useSquawk, usePending } from "../../utils/Store";
 import {
     listBuildDefinitions,
     listReleaseDefinitions
 } from "../../utils/Actions";
+import { Dropdown } from "../Common/Dropdown";
 
 export const SelectProject = () => {
     const { projects, tenantId, organizationId } = useSquawk(
@@ -11,22 +12,35 @@ export const SelectProject = () => {
         "tenantId",
         "organizationId"
     );
-    //const loading = usePending("projects");
+    const loading = usePending("projects");
+
+    console.log(organizationId);
 
     const selectProject = (project: string) => {
-        /*listBuildDefinitions({ tenantId: selectedOrg!, project });
-        listReleaseDefinitions({ tenantId: selectedOrg!, project });*/
+        listBuildDefinitions({
+            tenantId: tenantId!,
+            organizationId: organizationId!,
+            project
+        });
+        listReleaseDefinitions({
+            tenantId: tenantId!,
+            organizationId: organizationId!,
+            project
+        });
     };
 
+    const items = projects.map(p => ({
+        key: p.id,
+        value: p.name,
+        text: p.name
+    }));
+
     return (
-        <div className="bp3-select">
-            <select onChange={ev => selectProject(ev.currentTarget.value)}>
-                {projects.map(p => (
-                    <option key={p.id} value={p.name}>
-                        {p.name}
-                    </option>
-                ))}
-            </select>
-        </div>
+        <Dropdown<string>
+            items={items}
+            onChange={selectProject}
+            loading={loading}
+            noData="No projects found"
+        />
     );
 };
