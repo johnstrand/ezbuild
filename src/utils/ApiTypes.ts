@@ -54,6 +54,7 @@ export interface BuildDefinition {
     revision: number;
     createdDate: Date;
     project: Project;
+    process: Process;
     repository: Repository;
     variables: Variables;
     queue: Queue;
@@ -235,4 +236,48 @@ export interface ReleaseDefinition {
     projectReference: any;
     url: string;
     _links: ValueLinks;
+}
+
+export interface Process {
+    phases?: Phase[];
+    type: number;
+    yamlFilename?: string;
+}
+
+export interface Phase {
+    steps: Step[];
+    name: string;
+    refName: string;
+    condition: string;
+    target: Target;
+    jobAuthorizationScope: string;
+    jobCancelTimeoutInMinutes?: number;
+}
+
+export interface ExecutionOptions {
+    type: number;
+}
+
+export interface Target {
+    executionOptions: ExecutionOptions;
+    allowScriptsAuthAccessOption: boolean;
+    type: number;
+}
+
+export interface Step {
+    environment: any;
+    enabled: boolean;
+    continueOnError: boolean;
+    alwaysRun: boolean;
+    displayName: string;
+    timeoutInMinutes: number;
+    condition?: string;
+    task: Task;
+    inputs: { [key: string]: string };
+}
+
+export interface Task {
+    id: string;
+    versionSpec: string;
+    definitionType: string;
 }

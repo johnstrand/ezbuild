@@ -7,6 +7,7 @@ import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
 import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
 import { HTMLTableLoadingDataRow } from "../Common/HTMLTableLoadingDataRow";
 import { Button } from "../Common/Button";
+import { DialogHeader, DialogBody } from "../Common/Dialog";
 
 interface Props {
     id: number;
@@ -52,10 +53,8 @@ export const BuildHistoryList = (props: Props) => {
                 onClose={() => setVisible(false)}
                 className="bp3-dark large-dialog scroll-dialog"
             >
-                <div className={Classes.DIALOG_HEADER}>
-                    Build history for {props.name}
-                </div>
-                <div className={Classes.DIALOG_BODY}>
+                <DialogHeader content={`Build history for ${props.name}`} />
+                <DialogBody>
                     <Button
                         icon="refresh"
                         onClick={() => loadHistory()}
@@ -88,7 +87,7 @@ export const BuildHistoryList = (props: Props) => {
                             ))}
                         </tbody>
                     </HTMLTable>
-                </div>
+                </DialogBody>
             </Dialog>
         </>
     );
