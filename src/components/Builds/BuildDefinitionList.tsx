@@ -33,7 +33,6 @@ export const BuildDefinitionList = () => {
             if (refreshing || loading) {
                 return;
             }
-
             refresh();
         }, 10000);
 
