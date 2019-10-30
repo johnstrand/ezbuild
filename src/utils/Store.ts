@@ -19,6 +19,7 @@ import { getAccount } from "./Auth";
 
 interface AppState {
     authority: string;
+    tenantFilter: AzureTenant[];
     tenants: AzureTenant[];
     tenantId: string | null;
     account: Account;
@@ -44,6 +45,7 @@ export const {
     get: getStoreValue
 } = createStore<AppState>({
     authority: "common",
+    tenantFilter: JSON.parse(localStorage.getItem("tenantFilter")!) || [],
     tenants: [],
     tenantId: null,
     account: getAccount(),

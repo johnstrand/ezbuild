@@ -14,8 +14,6 @@ export const SelectProject = () => {
     );
     const loading = usePending("projects");
 
-    console.log(organizationId);
-
     const selectProject = (project: string) => {
         listBuildDefinitions({
             tenantId: tenantId!,

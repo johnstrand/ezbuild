@@ -6,6 +6,7 @@ import { TopMenu } from "./components/TopMenu/TopMenu";
 import { MainPage } from "./components/Main/MainPage";
 import { useSquawk } from "./utils/Store";
 import { Login } from "./components/Main/Login";
+import { SuggestAddFilter } from "./components/Organizations/SuggestAddFilter";
 
 const App: React.FC = () => {
     const { account } = useSquawk("account");
@@ -16,6 +17,7 @@ const App: React.FC = () => {
         <div className="bp3-dark app-root">
             <TopMenu />
             <MainPage />
+            <SuggestAddFilter />
         </div>
     );
 };

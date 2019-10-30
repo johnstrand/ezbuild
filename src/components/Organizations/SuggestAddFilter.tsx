@@ -6,27 +6,51 @@ import {
     DialogBody,
     DialogFooterActions
 } from "../Common/Dialog";
+import { addTenantFilter } from "../../utils/Actions";
 
 export const SuggestAddFilter = () => {
-    const loading = usePending("organizations");
-    const { organizations, tenantId } = useSquawk("organizations", "tenantId");
+    const loading = {
+        organizations: usePending("organizations"),
+        projects: usePending("projects")
+    };
+    const { organizations, tenantId, tenants } = useSquawk(
+        "organizations",
+        "tenantId",
+        "tenants"
+    );
 
     const [open, setOpen] = useState(false);
 
+    const tenant = tenants.find(t => t.tenantId === tenantId);
+
     useEffect(() => {
-        setOpen(!loading && organizations.length === 0);
-    }, [loading, organizations]);
+        setOpen(
+            !loading.organizations &&
+                !loading.projects &&
+                organizations.length === 0
+        );
+    }, [loading.organizations, loading.projects, organizations]);
+
+    if (!tenant) {
+        return null;
+    }
+
+    const setFilter = () => {
+        addTenantFilter(tenant);
+        setOpen(false);
+    };
 
     return (
         <Dialog isOpen={open} className="bp3-dark">
             <DialogHeader content="Filter current tenant?" />
             <DialogBody>
-                The tenant {tenantId} does not appear to have any Azure DevOps
-                organizations, would you like to add a filter to remove it?
+                The tenant "{tenant.displayName}" does not appear to have any
+                Azure DevOps organizations, would you like to add a filter to
+                remove it?
             </DialogBody>
             <DialogFooterActions>
                 <Button text="Cancel" onClick={() => setOpen(false)} />
-                <Button text="Ok" />
+                <Button text="Ok" intent="primary" onClick={setFilter} />
             </DialogFooterActions>
         </Dialog>
     );
