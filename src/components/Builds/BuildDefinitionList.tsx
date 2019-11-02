@@ -30,7 +30,7 @@ export const BuildDefinitionList = () => {
 
     useEffect(() => {
         const id = window.setInterval(() => {
-            if (refreshing || loading) {
+            if (refreshing || loading || buildDefinitions.length === 0) {
                 return;
             }
             refresh();
