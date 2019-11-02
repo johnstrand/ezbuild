@@ -9,7 +9,7 @@ export const addTenantFilter = action<AzureTenant>((state, tenant) => {
             "That tenant was already filtered, sorry about that",
             "warning"
         );
-        return {};
+        return [];
     }
 
     showToast("Filter added, please reload page to apply", "success");
@@ -17,7 +17,7 @@ export const addTenantFilter = action<AzureTenant>((state, tenant) => {
 
     localStorage.setItem("tenantFilter", JSON.stringify(tenantFilter));
 
-    return { tenantFilter };
+    return [{ tenantFilter }, () => listTenants()];
 });
 
 export const listTenants = action(async state => {
@@ -26,17 +26,20 @@ export const listTenants = action(async state => {
         t => !state.tenantFilter.some(f => f.tenantId === t.tenantId)
     );
     if (tenants.length > 0) {
-        listOrganizations(tenants[0].tenantId);
+        //await listOrganizations(tenants[0].tenantId);
     }
     pending(
         ["tenants", "organizations", "projects", "buildDefinitions"],
         false
     );
-    return {
-        tenants,
-        account: getAccount(),
-        tenantId: tenants.length > 0 ? tenants[0].tenantId : null
-    };
+    return [
+        {
+            tenants,
+            account: getAccount(),
+            tenantId: tenants.length > 0 ? tenants[0].tenantId : null
+        },
+        () => listOrganizations(tenants[0].tenantId)
+    ];
 });
 
 export const listOrganizations = action<string>(async (state, tenantId) => {
@@ -54,12 +57,14 @@ export const listOrganizations = action<string>(async (state, tenantId) => {
         });
     }
     pending(["organizations", "projects", "buildDefinitions"], false);
-    return {
-        organizations,
-        tenantId,
-        organizationId:
-            organizations.length > 0 ? organizations[0].accountName : null
-    };
+    return [
+        {
+            organizations,
+            tenantId,
+            organizationId:
+                organizations.length > 0 ? organizations[0].accountName : null
+        }
+    ];
 });
 
 export const listProjects = action<{
@@ -84,17 +89,19 @@ export const listProjects = action<{
             });
             */
         }
-        return {
-            tenantId,
-            projects,
-            organizationId,
-            selectedProject: projects[0].id
-        };
+        return [
+            {
+                tenantId,
+                projects,
+                organizationId,
+                selectedProject: projects[0].id
+            }
+        ];
     } catch {
     } finally {
         pending(["projects", "buildDefinitions"], false);
     }
-    return {};
+    return [];
 });
 
 export const listReleaseDefinitions = action<{
@@ -103,7 +110,7 @@ export const listReleaseDefinitions = action<{
     project: string;
 }>(async ({ releaseService }, { tenantId, organizationId, project }) => {
     await releaseService.listDefinitions(tenantId, organizationId, project);
-    return {};
+    return [];
 });
 
 export const listBuildDefinitions = action<{
@@ -121,7 +128,7 @@ export const listBuildDefinitions = action<{
         project
     );
     pending(["buildDefinitions"], false);
-    return { buildDefinitions, projectId: project };
+    return [{ buildDefinitions, projectId: project }];
 });
 
 if (getAccount()) {
