@@ -26,10 +26,15 @@ export default function createStore<TStore>(globalState: TStore) {
 
     /** Actual update method, handles resolving subscribers and reducers */
     const internalUpdate = (value: any) => {
+        /** If we have received a function, evaluate it before proceeding */
+        if (typeof value === "function") {
+            value = value();
+        }
         /** Make sure that value is not null, and that it is an object */
         if (!value || typeof value !== "object") {
             return;
         }
+
         /** Get a list of affected contexts from value object */
         const contexts = Object.keys(value);
         /** Get a (non-unique) list of affected reducers */
@@ -103,24 +108,39 @@ export default function createStore<TStore>(globalState: TStore) {
     }
 
     function action(
-        reducer: (value: TStore) => Promise<Partial<TStore>> | Partial<TStore>
+        reducer: (
+            value: TStore
+        ) =>
+            | Promise<(Partial<TStore> | Function)[]>
+            | (Partial<TStore> | Function)[]
     ): () => Promise<void>;
     function action<T>(
         reducer: (
             value: TStore,
             payload: T
-        ) => Promise<Partial<TStore>> | Partial<TStore>
+        ) =>
+            | Promise<(Partial<TStore> | Function)[]>
+            | (Partial<TStore> | Function)[]
     ): (payload: T) => Promise<void>;
     function action(
         reducer: (
             value: TStore,
             payload?: any
-        ) => Promise<Partial<TStore>> | Partial<TStore>
+        ) =>
+            | Promise<(Partial<TStore> | Function)[]>
+            | (Partial<TStore> | Function)[]
     ) {
         return async (payload?: any) => {
-            await Promise.resolve(reducer(globalState, payload)).then(
-                internalUpdate
+            const updates = await Promise.resolve(
+                reducer(globalState, payload)
             );
+            for (const update of updates) {
+                internalUpdate(
+                    await Promise.resolve(
+                        typeof update === "function" ? update() : update
+                    )
+                );
+            }
         };
     }
 
@@ -173,13 +193,14 @@ export default function createStore<TStore>(globalState: TStore) {
             if (!pendingSubscribers.has(context as string)) {
                 pendingSubscribers.set(context as string, new Set());
             }
-            const callback = (state: boolean) => setPending(state);
+            let callback = (state: boolean) => setPending(state);
 
             pendingSubscribers.get(context as string)!.add(callback);
 
             useEffect(() => {
                 return () => {
                     pendingSubscribers.get(context as string)!.delete(callback);
+                    (callback as any) = undefined;
                 };
             }, [context]);
 
