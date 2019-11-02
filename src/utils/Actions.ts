@@ -2,6 +2,11 @@ import { action, pending } from "./Store";
 import { getTenants, getAccount } from "./Auth";
 import { AzureTenant } from "./ApiTypes";
 import { showToast } from "./AppToaster";
+import {
+    tenantCompare,
+    organizationCompare,
+    projectCompare
+} from "./Comparers";
 
 export const addTenantFilter = action<AzureTenant>((state, tenant) => {
     if (state.tenantFilter.some(t => t.tenantId === tenant.tenantId)) {
@@ -22,16 +27,15 @@ export const addTenantFilter = action<AzureTenant>((state, tenant) => {
 
 export const listTenants = action(async state => {
     pending(["tenants", "organizations", "projects", "buildDefinitions"], true);
-    const tenants = (await getTenants()).filter(
-        t => !state.tenantFilter.some(f => f.tenantId === t.tenantId)
-    );
-    if (tenants.length > 0) {
-        //await listOrganizations(tenants[0].tenantId);
-    }
+    const tenants = (await getTenants())
+        .filter(t => !state.tenantFilter.some(f => f.tenantId === t.tenantId))
+        .sort(tenantCompare);
+
     pending(
         ["tenants", "organizations", "projects", "buildDefinitions"],
         false
     );
+
     return [
         {
             tenants,
@@ -46,10 +50,10 @@ export const listOrganizations = action<string>(async (state, tenantId) => {
     window.location.hash = tenantId;
     pending(["organizations", "projects", "buildDefinitions"], true);
     const profile = await state.profileService.get(tenantId);
-    const organizations = await state.accountService.listAccounts(
+    const organizations = (await state.accountService.listAccounts(
         tenantId,
         profile.id
-    );
+    )).sort(organizationCompare);
     if (organizations.length > 0) {
         listProjects({
             tenantId,
@@ -74,12 +78,15 @@ export const listProjects = action<{
     window.location.hash = [tenantId, organizationId].join("/");
     pending(["projects", "buildDefinitions"], true);
     try {
-        const projects = await projectService.list(tenantId, organizationId);
+        const projects = (await projectService.list(
+            tenantId,
+            organizationId
+        )).sort(projectCompare);
         if (projects.length) {
             listBuildDefinitions({
                 tenantId,
                 organizationId,
-                project: projects[0].id
+                project: projects[1].id
             });
             /*
             listReleaseDefinitions({
