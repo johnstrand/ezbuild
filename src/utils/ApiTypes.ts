@@ -255,7 +255,7 @@ export interface Phase {
 }
 
 export interface ExecutionOptions {
-    type: number;
+    [key: string]: any;
 }
 
 export interface Target {
