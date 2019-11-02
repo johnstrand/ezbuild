@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useSquawk, usePending } from "../../utils/Store";
+import { useSquawk, usePending } from "../../../utils/Store";
 import { HTMLTable, Spinner } from "@blueprintjs/core";
-import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
-import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
-import { stringCompare } from "../../utils/Comparers";
+import { HTMLTableNoDataRow } from "../../Common/HTMLTableNoDataRow";
+import { HTMLTableSingleHeader } from "../../Common/HTMLTableSingleHeader";
+import { stringCompare } from "../../../utils/Comparers";
 import { BuildDefinitionListItem } from "./BuildDefinitionListItem";
-import { Button } from "../Common/Button";
-import { listBuildDefinitions } from "../../utils/Actions";
+import { Button } from "../../Common/Button";
+import { listBuildDefinitions } from "../../../utils/Actions";
 
 export const BuildDefinitionList = () => {
     const { buildDefinitions, tenantId, organizationId, projectId } = useSquawk(
@@ -30,7 +30,11 @@ export const BuildDefinitionList = () => {
 
     useEffect(() => {
         const id = window.setInterval(() => {
-            if (refreshing || loading || buildDefinitions.length === 0) {
+            if (
+                refreshing ||
+                loading ||
+                buildDefinitions.some(b => b.repository.type === "TfsGit")
+            ) {
                 return;
             }
             refresh();

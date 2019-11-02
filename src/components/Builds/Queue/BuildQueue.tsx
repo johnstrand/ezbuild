@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import {
     Dialog,
     FormGroup,
@@ -6,18 +6,19 @@ import {
     InputGroup,
     Spinner
 } from "@blueprintjs/core";
-import { showToast } from "../../utils/AppToaster";
-import { Repository, Branch, Variables, Queue } from "../../utils/ApiTypes";
-import { useSquawk } from "../../utils/Store";
+import { showToast } from "../../../utils/AppToaster";
+import { Repository, Variables, Queue } from "../../../utils/ApiTypes";
+import { useSquawk } from "../../../utils/Store";
 import {
     DialogFooterActions,
     DialogHeader,
     DialogBody
-} from "../Common/Dialog";
-import { branchCompare } from "../../utils/Comparers";
-import { convertVariables } from "../../utils/Utils";
-import { HideableNonIdealState, HideableFormGroup } from "../Common/Hidable";
-import { Button } from "../Common/Button";
+} from "../../Common/Dialog";
+import { branchCompare } from "../../../utils/Comparers";
+import { convertVariables } from "../../../utils/Utils";
+import { HideableNonIdealState, HideableFormGroup } from "../../Common/Hidable";
+import { Button } from "../../Common/Button";
+import { buildQueueReducer, BuildQueueReducer } from "./BuildQueue.state";
 
 interface Props {
     id: number;
@@ -28,10 +29,15 @@ interface Props {
 }
 
 export const BuildQueue = (props: Props) => {
-    const [visible, setVisible] = useState(false);
-    const [branches, setBranches] = useState<Branch[]>([]);
-    const [branch, setBranch] = useState("");
-    const [loading, setLoading] = useState(true);
+    const [{ branch, branches, loading, visible }, dispatch] = useReducer<
+        BuildQueueReducer
+    >(buildQueueReducer, {
+        visible: false,
+        branches: [],
+        branch: "",
+        loading: false
+    });
+
     const {
         repositoryService,
         buildService,
@@ -47,8 +53,7 @@ export const BuildQueue = (props: Props) => {
     );
 
     const prepareQueue = async () => {
-        setVisible(true);
-        setLoading(true);
+        dispatch({ visible: true, loading: true });
         const b = (
             (await repositoryService.listBranches(
                 tenantId!,
@@ -57,11 +62,11 @@ export const BuildQueue = (props: Props) => {
                 props.repository.id
             )) || []
         ).sort(branchCompare);
-        setBranches(b);
-        if (b.length > 0) {
-            setBranch(b[0].name);
-        }
-        setLoading(false);
+        dispatch({
+            branches: b,
+            loading: false,
+            branch: b.length > 0 ? b[0].name : ""
+        });
 
         // TODO: Copy variables into local state and make editable
     };
@@ -85,8 +90,10 @@ export const BuildQueue = (props: Props) => {
         };
         await buildService.trigger(tenantId!, organizationId!, request);
         showToast("Build queued", "success", "cog");
-        setVisible(false);
+        dispatch({ visible: false });
     };
+
+    const disabled = props.repository.type !== "TfsGit";
 
     return (
         <>
@@ -94,11 +101,16 @@ export const BuildQueue = (props: Props) => {
                 icon="play"
                 intent="primary"
                 onClick={prepareQueue}
-                tooltip={`Queue build for ${props.name}`}
+                tooltip={
+                    disabled
+                        ? `Builds are not supported for repository type ${props.repository.type}`
+                        : `Queue build for ${props.name}`
+                }
+                disabled={disabled}
             />
             <Dialog
                 isOpen={visible}
-                onClose={() => setVisible(false)}
+                onClose={() => dispatch({ visible: false })}
                 className="bp3-dark"
             >
                 <DialogHeader content={`Queue new build for ${props.name}`} />
@@ -117,7 +129,7 @@ export const BuildQueue = (props: Props) => {
                             id="branches"
                             fill
                             onChange={({ currentTarget: { value } }) =>
-                                setBranch(value)
+                                dispatch({ branch: value })
                             }
                         >
                             {branches.map(branch => (
@@ -148,7 +160,10 @@ export const BuildQueue = (props: Props) => {
                         ))}
                 </DialogBody>
                 <DialogFooterActions>
-                    <Button text="Cancel" onClick={() => setVisible(false)} />
+                    <Button
+                        text="Cancel"
+                        onClick={() => dispatch({ visible: false })}
+                    />
                     <Button
                         disabled={branches.length === 0}
                         intent="primary"

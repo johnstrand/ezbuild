@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tabs, Tab } from "@blueprintjs/core";
-import { BuildDefinitionList } from "../Builds/BuildDefinitionList";
+import { BuildDefinitionList } from "../Builds/Definitions/BuildDefinitionList";
 
 export const MainPage = () => {
     const {

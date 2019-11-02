@@ -1,10 +1,10 @@
 import React from "react";
-import { BuildDefinition } from "../../utils/ApiTypes";
+import { BuildDefinition } from "../../../utils/ApiTypes";
 import { ButtonGroup } from "@blueprintjs/core";
-import { BuildHistoryList } from "./BuildHistoryList";
-import { BuildQueue } from "./BuildQueue";
-import { BuildStatusIcon } from "./BuildStatusIcon";
-import { BuildDefinitionProcess } from "./BuildDefinitionProcess";
+import { BuildHistoryList } from "../BuildHistoryList";
+import { BuildQueue } from "../Queue/BuildQueue";
+import { BuildStatusIcon } from "../BuildStatusIcon";
+import { BuildDefinitionProcess } from "../Process/BuildDefinitionProcess";
 
 interface Props {
     definition: BuildDefinition;
