@@ -56,7 +56,7 @@ export async function getToken(
             await app.loginPopup(request);
             return await getToken(authority, scope);
         } else {
-            throw error;
+            return (await app.acquireTokenPopup(request)).accessToken;
         }
     }
 }
