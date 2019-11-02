@@ -86,7 +86,7 @@ export const listProjects = action<{
             listBuildDefinitions({
                 tenantId,
                 organizationId,
-                project: projects[1].id
+                project: projects[0].id
             });
             /*
             listReleaseDefinitions({
