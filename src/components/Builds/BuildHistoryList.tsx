@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dialog, Classes, HTMLTable } from "@blueprintjs/core";
+import { Dialog, HTMLTable } from "@blueprintjs/core";
 import { useSquawk } from "../../utils/Store";
 import { Build } from "../../utils/ApiTypes";
 import { BuildHistoryListItem } from "./BuildHistoryListItem";
