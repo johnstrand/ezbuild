@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { BuildDefinition } from "../../../utils/ApiTypes";
 import { ButtonGroup } from "@blueprintjs/core";
 import { BuildHistoryList } from "../BuildHistoryList";
@@ -10,7 +10,7 @@ interface Props {
     definition: BuildDefinition;
 }
 
-export const BuildDefinitionListItem = ({ definition }: Props) => {
+const BuildDefinitionListItem = ({ definition }: Props) => {
     return (
         <tr key={definition.id}>
             <td>{definition.name}</td>
@@ -46,3 +46,5 @@ export const BuildDefinitionListItem = ({ definition }: Props) => {
         </tr>
     );
 };
+
+export default memo(BuildDefinitionListItem);

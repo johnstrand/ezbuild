@@ -4,7 +4,7 @@ import { HTMLTable, Spinner } from "@blueprintjs/core";
 import { HTMLTableNoDataRow } from "../../Common/HTMLTableNoDataRow";
 import { HTMLTableSingleHeader } from "../../Common/HTMLTableSingleHeader";
 import { stringCompare } from "../../../utils/Comparers";
-import { BuildDefinitionListItem } from "./BuildDefinitionListItem";
+import BuildDefinitionListItem from "./BuildDefinitionListItem";
 import { Button } from "../../Common/Button";
 import { listBuildDefinitions } from "../../../utils/Actions";
 
@@ -33,7 +33,7 @@ export const BuildDefinitionList = () => {
             if (
                 refreshing ||
                 loading ||
-                buildDefinitions.some(b => b.repository.type === "TfsGit")
+                !buildDefinitions.some(b => b.repository.type === "TfsGit")
             ) {
                 return;
             }
