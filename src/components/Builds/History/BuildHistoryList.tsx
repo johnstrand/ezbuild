@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { Dialog, HTMLTable } from "@blueprintjs/core";
 import { useSquawk } from "utils/Store";
-import { Build } from "utils/ApiTypes";
+import {
+    Build,
+    HIDDEN,
+    LOADING_COMPLETE,
+    VISIBLE,
+    LOADING
+} from "utils/ApiTypes";
 import BuildHistoryListItem from "./BuildHistoryListItem";
 import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader";
 import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
@@ -15,8 +21,8 @@ interface Props {
 }
 
 const BuildHistoryList = (props: Props) => {
-    const [visible, setVisible] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [visible, setVisible] = useState(HIDDEN);
+    const [loading, setLoading] = useState(LOADING_COMPLETE);
 
     const [list, setList] = useState<Build[]>([]);
 
@@ -28,8 +34,8 @@ const BuildHistoryList = (props: Props) => {
     );
 
     const loadHistory = async () => {
-        setVisible(true);
-        setLoading(true);
+        setVisible(VISIBLE);
+        setLoading(LOADING);
         setList([]);
         const history = await buildService.listHistory(
             tenantId!,
@@ -37,7 +43,7 @@ const BuildHistoryList = (props: Props) => {
             projectId!,
             props.id
         );
-        setLoading(false);
+        setLoading(LOADING_COMPLETE);
         setList(history);
     };
 
@@ -57,7 +63,7 @@ const BuildHistoryList = (props: Props) => {
                 <DialogBody>
                     <Button
                         icon="refresh"
-                        onClick={() => loadHistory()}
+                        onClick={loadHistory}
                         tooltip="Refresh"
                     />
                     <HTMLTable>

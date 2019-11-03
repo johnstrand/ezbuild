@@ -3,6 +3,12 @@ export interface ResponseList<T> {
     value: T[];
 }
 
+export const LOADING = true;
+export const LOADING_COMPLETE = false;
+
+export const VISIBLE = true;
+export const HIDDEN = false;
+
 export interface AzureTenant {
     id: string;
     tenantId: string;
