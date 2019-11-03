@@ -38,7 +38,7 @@ const BuildDefinitionList = () => {
                 return;
             }
             refresh();
-        }, 10000);
+        }, 60000);
 
         return () => window.clearInterval(id);
     });
