@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Tabs, Tab } from "@blueprintjs/core";
-import { BuildDefinitionList } from "../Builds/Definitions/BuildDefinitionList";
+import BuildDefinitionList from "components/Builds/Definitions/BuildDefinitionList";
 
-export const MainPage = () => {
+const MainPage = () => {
     const {
         location: { hash }
     } = window;
@@ -28,3 +28,5 @@ export const MainPage = () => {
         </Tabs>
     );
 };
+
+export default MainPage;

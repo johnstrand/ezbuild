@@ -1,13 +1,13 @@
 import React from "react";
 import { Phase } from "utils/ApiTypes";
 import { FormGroup, InputGroup } from "@blueprintjs/core";
-import { BuildDefinitionStep } from "./BuildDefinitionStep";
+import BuildDefinitionStep from "./BuildDefinitionStep";
 
 interface Props {
     phase: Phase;
 }
 
-export const BuildDefinitionPhase = ({ phase }: Props) => {
+const BuildDefinitionPhase = ({ phase }: Props) => {
     return (
         <>
             <h2>Phase: {phase.name}</h2>
@@ -31,3 +31,5 @@ export const BuildDefinitionPhase = ({ phase }: Props) => {
         </>
     );
 };
+
+export default BuildDefinitionPhase;

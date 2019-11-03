@@ -1,14 +1,14 @@
 import React from "react";
-import { BuildResult, BuildStatus } from "../../utils/ApiTypes";
+import { BuildResult, BuildStatus } from "utils/ApiTypes";
 import { Icon } from "@blueprintjs/core";
-import { WithTooltip } from "../Common/WithTooltip";
+import { WithTooltip } from "components/Common/WithTooltip";
 
 interface Props {
     result: BuildResult;
     status: BuildStatus;
 }
 
-export const BuildStatusIcon = ({ result, status }: Props) => {
+const BuildStatusIcon = ({ result, status }: Props) => {
     if (status !== "completed") {
         const statusIcon =
             status === "cancelling"
@@ -49,3 +49,5 @@ export const BuildStatusIcon = ({ result, status }: Props) => {
         />
     );
 };
+
+export default BuildStatusIcon;

@@ -1,4 +1,4 @@
-import { Branch, AzureTenant, Organization, Project } from "./ApiTypes";
+import { Branch, AzureTenant, Organization, Project } from "utils/ApiTypes";
 
 export const stringCompare = (a: string, b: string) => {
     return a > b ? 1 : a < b ? -1 : 0;

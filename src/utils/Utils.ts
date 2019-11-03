@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Variables } from "./ApiTypes";
+import { Variables } from "utils/ApiTypes";
 
 export const useDateFormat = (date: string) => {
     return useMemo(

@@ -1,7 +1,7 @@
-import { action, pending } from "./Store";
-import { getTenants, getAccount } from "./Auth";
-import { AzureTenant } from "./ApiTypes";
-import { showToast } from "./AppToaster";
+import { action, pending } from "utils/Store";
+import { getTenants, getAccount } from "utils/Auth";
+import { AzureTenant } from "utils/ApiTypes";
+import showToast from "utils/AppToaster";
 import {
     tenantCompare,
     organizationCompare,
@@ -17,7 +17,10 @@ export const addTenantFilter = action<AzureTenant>((state, tenant) => {
         return [];
     }
 
-    showToast("Filter added, please reload page to apply", "success");
+    showToast(
+        "Filter added, please reload page if the filter fails to apply",
+        "success"
+    );
     const tenantFilter = [...state.tenantFilter, tenant];
 
     localStorage.setItem("tenantFilter", JSON.stringify(tenantFilter));

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { usePending, useSquawk } from "../../utils/Store";
+import { usePending, useSquawk } from "utils/Store";
 import { Dialog, Button } from "@blueprintjs/core";
 import {
     DialogHeader,
     DialogBody,
     DialogFooterActions
-} from "../Common/Dialog";
-import { addTenantFilter } from "../../utils/Actions";
+} from "components/Common/Dialog";
+import { addTenantFilter } from "utils/Actions";
 
-export const SuggestAddFilter = () => {
+const SuggestAddFilter = () => {
     const loading = {
         organizations: usePending("organizations"),
         projects: usePending("projects")
@@ -55,3 +55,5 @@ export const SuggestAddFilter = () => {
         </Dialog>
     );
 };
+
+export default SuggestAddFilter;

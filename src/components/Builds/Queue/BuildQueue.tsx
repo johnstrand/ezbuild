@@ -6,19 +6,22 @@ import {
     InputGroup,
     Spinner
 } from "@blueprintjs/core";
-import { showToast } from "../../../utils/AppToaster";
-import { Repository, Variables, Queue } from "../../../utils/ApiTypes";
-import { useSquawk } from "../../../utils/Store";
+import showToast from "utils/AppToaster";
+import { Repository, Variables, Queue } from "utils/ApiTypes";
+import { useSquawk } from "utils/Store";
 import {
     DialogFooterActions,
     DialogHeader,
     DialogBody
-} from "../../Common/Dialog";
-import { branchCompare } from "../../../utils/Comparers";
-import { convertVariables } from "../../../utils/Utils";
-import { HideableNonIdealState, HideableFormGroup } from "../../Common/Hidable";
-import { Button } from "../../Common/Button";
-import { buildQueueReducer, BuildQueueReducer } from "./BuildQueue.state";
+} from "components/Common/Dialog";
+import { branchCompare } from "utils/Comparers";
+import { convertVariables } from "utils/Utils";
+import {
+    HideableNonIdealState,
+    HideableFormGroup
+} from "components/Common/Hideable";
+import Button from "components/Common/Button";
+import buildQueueReducer from "./BuildQueue.state";
 
 interface Props {
     id: number;
@@ -28,15 +31,18 @@ interface Props {
     variables: Variables;
 }
 
-export const BuildQueue = (props: Props) => {
-    const [{ branch, branches, loading, visible }, dispatch] = useReducer<
-        BuildQueueReducer
-    >(buildQueueReducer, {
-        visible: false,
-        branches: [],
-        branch: "",
-        loading: false
-    });
+// TODO: Refactor this
+
+const BuildQueue = (props: Props) => {
+    const [{ branch, branches, loading, visible }, dispatch] = useReducer(
+        buildQueueReducer,
+        {
+            visible: false,
+            branches: [],
+            branch: "",
+            loading: false
+        }
+    );
 
     const {
         repositoryService,
@@ -175,3 +181,5 @@ export const BuildQueue = (props: Props) => {
         </>
     );
 };
+
+export default BuildQueue;

@@ -7,7 +7,7 @@ interface Props {
     text: string;
 }
 
-export const HTMLTableNoDataRow = (props: Props) => {
+const HTMLTableNoDataRow = (props: Props) => {
     if (!props.visible) {
         return null;
     }
@@ -19,3 +19,5 @@ export const HTMLTableNoDataRow = (props: Props) => {
         </tr>
     );
 };
+
+export default HTMLTableNoDataRow;

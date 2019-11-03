@@ -7,7 +7,7 @@ interface Props {
     size: number;
 }
 
-export const HTMLTableLoadingDataRow = (props: Props) => {
+const HTMLTableLoadingDataRow = (props: Props) => {
     if (!props.visible) {
         return null;
     }
@@ -19,3 +19,5 @@ export const HTMLTableLoadingDataRow = (props: Props) => {
         </tr>
     );
 };
+
+export default HTMLTableLoadingDataRow;

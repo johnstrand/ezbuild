@@ -5,11 +5,11 @@ import {
     NavbarHeading,
     NavbarDivider
 } from "@blueprintjs/core";
-import { SelectOrganization } from "./SelectOrganization";
-import { SelectProject } from "./SelectProject";
-import { SelectTenant } from "./SelectTenant";
+import SelectOrganization from "./SelectOrganization";
+import SelectProject from "./SelectProject";
+import SelectTenant from "./SelectTenant";
 
-export const TopMenu = () => {
+const TopMenu = () => {
     return (
         <Navbar>
             <NavbarGroup>
@@ -24,3 +24,5 @@ export const TopMenu = () => {
         </Navbar>
     );
 };
+
+export default TopMenu;

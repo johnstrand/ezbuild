@@ -4,10 +4,12 @@ interface Props {
     children: React.ReactNode;
 }
 
-export const HTMLTableSingleHeader = (props: Props) => {
+const HTMLTableSingleHeader = (props: Props) => {
     return (
         <thead>
             <tr>{props.children}</tr>
         </thead>
     );
 };
+
+export default HTMLTableSingleHeader;

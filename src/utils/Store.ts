@@ -1,10 +1,10 @@
-import createStore from "./Squawk"; //"squawk-react";
+import createStore from "utils/Squawk"; //"squawk-react";
 import {
     Project,
     BuildDefinition,
     AzureTenant,
     Organization
-} from "./ApiTypes";
+} from "utils/ApiTypes";
 import {
     Api,
     ProjectService,
@@ -13,9 +13,9 @@ import {
     ReleaseService,
     ProfileService,
     AccountService
-} from "./Api";
+} from "utils/Api";
 import { Account } from "msal";
-import { getAccount } from "./Auth";
+import { getAccount } from "utils/Auth";
 
 interface AppState {
     authority: string;

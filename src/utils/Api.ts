@@ -8,8 +8,8 @@ import {
     ReleaseDefinition,
     Profile,
     Organization
-} from "./ApiTypes";
-import { getToken, scopes } from "./Auth";
+} from "utils/ApiTypes";
+import { getToken, scopes } from "utils/Auth";
 
 async function getHeaders(tenantId: string) {
     const token = await getToken(tenantId, scopes.devops);
@@ -29,6 +29,8 @@ async function get<T>(tenantId: string, organizationId: string, url: string) {
     }).then<T>(res => res.json());
     return result;
 }
+
+// TODO: Refactor
 
 async function getVsrm<T>(
     tenantId: string,

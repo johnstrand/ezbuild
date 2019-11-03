@@ -1,5 +1,5 @@
 import { Configuration, UserAgentApplication } from "msal";
-import { AzureTenant, ResponseList } from "./ApiTypes";
+import { AzureTenant, ResponseList } from "utils/ApiTypes";
 
 const msalConfig: Configuration = {
     auth: {

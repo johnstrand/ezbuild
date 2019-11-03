@@ -1,12 +1,9 @@
 import React from "react";
-import { useSquawk, usePending } from "../../utils/Store";
-import {
-    listBuildDefinitions,
-    listReleaseDefinitions
-} from "../../utils/Actions";
-import { Dropdown } from "../Common/Dropdown";
+import { useSquawk, usePending } from "utils/Store";
+import { listBuildDefinitions, listReleaseDefinitions } from "utils/Actions";
+import Dropdown from "components/Common/Dropdown";
 
-export const SelectProject = () => {
+const SelectProject = () => {
     const { projects, tenantId, organizationId } = useSquawk(
         "projects",
         "tenantId",
@@ -42,3 +39,5 @@ export const SelectProject = () => {
         />
     );
 };
+
+export default SelectProject;

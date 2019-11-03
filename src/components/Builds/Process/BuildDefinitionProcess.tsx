@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Process } from "utils/ApiTypes";
-import { Button } from "components/Common/Button";
+import Button from "components/Common/Button";
 import { Dialog } from "@blueprintjs/core";
 import { DialogHeader, DialogBody } from "components/Common/Dialog";
-import { BuildDefinitionPhase } from "./BuildDefinitionPhase";
+import BuildDefinitionPhase from "./BuildDefinitionPhase";
 
 interface Props {
     process: Process;
 }
 
-export const BuildDefinitionProcess = (props: Props) => {
+const BuildDefinitionProcess = (props: Props) => {
     const [open, setOpen] = useState(false);
     return (
         <>
@@ -43,3 +43,5 @@ export const BuildDefinitionProcess = (props: Props) => {
         </>
     );
 };
+
+export default BuildDefinitionProcess;

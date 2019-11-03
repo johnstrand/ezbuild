@@ -6,7 +6,7 @@ const AppToaster = Toaster.create({
     position: Position.TOP
 });
 
-export const showToast = (
+const showToast = (
     message: string,
     intent: IToastProps["intent"],
     icon?: IToastProps["icon"]
@@ -17,3 +17,5 @@ export const showToast = (
         icon
     });
 };
+
+export default showToast;

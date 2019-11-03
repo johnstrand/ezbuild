@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Alert } from "@blueprintjs/core";
-import { Button } from "./Button";
+import Button from "./Button";
 
 interface Props {
     confirmText: string;
@@ -10,7 +10,7 @@ interface Props {
     tooltip?: string;
 }
 
-export const ConfirmDeleteButton = (props: Props) => {
+const ConfirmDeleteButton = (props: Props) => {
     const [visible, setVisible] = useState(false);
     return (
         <>
@@ -42,3 +42,5 @@ export const ConfirmDeleteButton = (props: Props) => {
         </>
     );
 };
+
+export default ConfirmDeleteButton;

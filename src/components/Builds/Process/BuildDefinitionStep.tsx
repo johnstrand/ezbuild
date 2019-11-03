@@ -6,7 +6,7 @@ interface Props {
     step: Step;
 }
 
-export const BuildDefinitionStep = ({ step }: Props) => {
+const BuildDefinitionStep = ({ step }: Props) => {
     const [isOpen, setOpen] = useState(false);
     return (
         <div>
@@ -32,3 +32,5 @@ export const BuildDefinitionStep = ({ step }: Props) => {
         </div>
     );
 };
+
+export default BuildDefinitionStep;

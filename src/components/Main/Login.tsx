@@ -1,10 +1,10 @@
 import React from "react";
 import { Dialog, Button, Spinner } from "@blueprintjs/core";
-import { DialogHeader, DialogBody } from "../Common/Dialog";
-import { listTenants } from "../../utils/Actions";
-import { usePending } from "../../utils/Store";
+import { DialogHeader, DialogBody } from "components/Common/Dialog";
+import { listTenants } from "utils/Actions";
+import { usePending } from "utils/Store";
 
-export const Login = () => {
+const Login = () => {
     const loading = usePending("tenants");
     const handleLogin = () => {
         listTenants();
@@ -26,3 +26,5 @@ export const Login = () => {
         </div>
     );
 };
+
+export default Login;

@@ -1,4 +1,4 @@
-import { Branch } from "../../../utils/ApiTypes";
+import { Branch } from "utils/ApiTypes";
 
 interface State {
     visible: boolean;
@@ -7,14 +7,16 @@ interface State {
     loading: boolean;
 }
 
-export type BuildQueueReducer = (
+type BuildQueueReducer = (
     state: State,
     action: Partial<State> //{ type: K; value: State[K] }
 ) => State;
 
-export const buildQueueReducer: BuildQueueReducer = (
+const buildQueueReducer: BuildQueueReducer = (
     state: State,
     action: Partial<State> //{ type: K; value: State[K] }
 ) => {
     return { ...state, ...action };
 };
+
+export default buildQueueReducer;

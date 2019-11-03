@@ -1,7 +1,7 @@
 import React from "react";
 import { Button as BPButton, IButtonProps, Tooltip } from "@blueprintjs/core";
 
-export const Button = (
+const Button = (
     props: IButtonProps &
         React.HTMLAttributes<HTMLButtonElement> & { tooltip?: string }
 ) => {
@@ -14,3 +14,5 @@ export const Button = (
         </Tooltip>
     );
 };
+
+export default Button;

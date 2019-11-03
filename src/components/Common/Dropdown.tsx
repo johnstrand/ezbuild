@@ -15,7 +15,7 @@ interface Props<T extends string | number> {
     noData: string;
 }
 
-export const Dropdown = <T extends string | number>(props: Props<T>) => {
+const Dropdown = <T extends string | number>(props: Props<T>) => {
     if (props.loading) {
         return (
             <div>
@@ -51,3 +51,5 @@ export const Dropdown = <T extends string | number>(props: Props<T>) => {
         </div>
     );
 };
+
+export default Dropdown;

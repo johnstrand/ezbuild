@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { Dialog, HTMLTable } from "@blueprintjs/core";
-import { useSquawk } from "../../utils/Store";
-import { Build } from "../../utils/ApiTypes";
-import { BuildHistoryListItem } from "./BuildHistoryListItem";
-import { HTMLTableSingleHeader } from "../Common/HTMLTableSingleHeader";
-import { HTMLTableNoDataRow } from "../Common/HTMLTableNoDataRow";
-import { HTMLTableLoadingDataRow } from "../Common/HTMLTableLoadingDataRow";
-import { Button } from "../Common/Button";
-import { DialogHeader, DialogBody } from "../Common/Dialog";
+import { useSquawk } from "utils/Store";
+import { Build } from "utils/ApiTypes";
+import BuildHistoryListItem from "./BuildHistoryListItem";
+import HTMLTableSingleHeader from "components/Common/HTMLTableSingleHeader";
+import HTMLTableNoDataRow from "components/Common/HTMLTableNoDataRow";
+import HTMLTableLoadingDataRow from "components/Common/HTMLTableLoadingDataRow";
+import Button from "components/Common/Button";
+import { DialogHeader, DialogBody } from "components/Common/Dialog";
 
 interface Props {
     id: number;
     name: string;
 }
 
-export const BuildHistoryList = (props: Props) => {
+const BuildHistoryList = (props: Props) => {
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -92,3 +92,5 @@ export const BuildHistoryList = (props: Props) => {
         </>
     );
 };
+
+export default BuildHistoryList;

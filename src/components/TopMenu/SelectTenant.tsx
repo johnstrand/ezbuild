@@ -1,7 +1,7 @@
 import React from "react";
-import { useSquawk, usePending } from "../../utils/Store";
-import { listOrganizations } from "../../utils/Actions";
-import { Dropdown } from "../Common/Dropdown";
+import { useSquawk, usePending } from "utils/Store";
+import { listOrganizations } from "utils/Actions";
+import Dropdown from "components/Common/Dropdown";
 
 export const SelectTenant = () => {
     const { tenants } = useSquawk("tenants");
@@ -22,3 +22,5 @@ export const SelectTenant = () => {
         />
     );
 };
+
+export default SelectTenant;
