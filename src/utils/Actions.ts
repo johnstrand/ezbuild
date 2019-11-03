@@ -7,6 +7,7 @@ import {
     organizationCompare,
     projectCompare
 } from "./Comparers";
+import getNavSelection from "./NavSelection";
 
 export const addTenantFilter = action<AzureTenant>((state, tenant) => {
     if (state.tenantFilter.some(t => t.tenantId === tenant.tenantId)) {
@@ -25,7 +26,7 @@ export const addTenantFilter = action<AzureTenant>((state, tenant) => {
 
     localStorage.setItem("tenantFilter", JSON.stringify(tenantFilter));
 
-    return [{ tenantFilter }, () => listTenants()];
+    return [{ tenantFilter }, listTenants];
 });
 
 export const listTenants = action(async state => {
@@ -39,38 +40,52 @@ export const listTenants = action(async state => {
         false
     );
 
+    const { tenantId } = getNavSelection();
+
+    const selectedTenantId =
+        tenants.length > 0
+            ? tenants.some(t => t.tenantId === tenantId)
+                ? tenantId
+                : tenants[0].tenantId
+            : null;
+
     return [
         {
             tenants,
             account: getAccount(),
-            tenantId: tenants.length > 0 ? tenants[0].tenantId : null
+            tenantId: selectedTenantId
         },
-        () => listOrganizations(tenants[0].tenantId)
+        () => selectedTenantId && listOrganizations(selectedTenantId)
     ];
 });
 
 export const listOrganizations = action<string>(async (state, tenantId) => {
-    window.location.hash = tenantId;
     pending(["organizations", "projects", "buildDefinitions"], true);
     const profile = await state.profileService.get(tenantId);
     const organizations = (await state.accountService.listAccounts(
         tenantId,
         profile.id
     )).sort(organizationCompare);
-    if (organizations.length > 0) {
-        listProjects({
-            tenantId,
-            organizationId: organizations[0].accountName
-        });
-    }
+
+    const { organizationId } = getNavSelection();
+
+    const selectedOrganizationId =
+        organizations.length > 0
+            ? organizations.some(o => o.accountName === organizationId)
+                ? organizationId
+                : organizations[0].accountName
+            : null;
+
     pending(["organizations", "projects", "buildDefinitions"], false);
     return [
         {
             organizations,
             tenantId,
-            organizationId:
-                organizations.length > 0 ? organizations[0].accountName : null
-        }
+            organizationId: selectedOrganizationId
+        },
+        () =>
+            selectedOrganizationId &&
+            listProjects({ tenantId, organizationId: selectedOrganizationId })
     ];
 });
 
@@ -78,33 +93,42 @@ export const listProjects = action<{
     tenantId: string;
     organizationId: string;
 }>(async ({ projectService }, { tenantId, organizationId }) => {
-    window.location.hash = [tenantId, organizationId].join("/");
     pending(["projects", "buildDefinitions"], true);
     try {
         const projects = (await projectService.list(
             tenantId,
             organizationId
         )).sort(projectCompare);
-        if (projects.length) {
-            listBuildDefinitions({
-                tenantId,
-                organizationId,
-                project: projects[0].id
-            });
-            /*
-            listReleaseDefinitions({
-                tenantId,
-                organizationId,
-                project: projects[0].name
-            });
-            */
-        }
+
+        const { projectId } = getNavSelection();
+
+        const selectedProjectId =
+            projects.length > 0
+                ? projects.some(p => p.id === projectId)
+                    ? projectId
+                    : projects[0].id
+                : null;
+
         return [
             {
                 tenantId,
                 projects,
                 organizationId,
-                selectedProject: projects[0].id
+                projectId: selectedProjectId
+            },
+            () => {
+                if (selectedProjectId) {
+                    listBuildDefinitions({
+                        tenantId,
+                        organizationId,
+                        project: selectedProjectId
+                    });
+                    listReleaseDefinitions({
+                        tenantId,
+                        organizationId,
+                        project: selectedProjectId
+                    });
+                }
             }
         ];
     } catch {

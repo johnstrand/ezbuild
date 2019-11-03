@@ -4,7 +4,7 @@ import { listOrganizations } from "utils/Actions";
 import Dropdown from "components/Common/Dropdown";
 
 export const SelectTenant = () => {
-    const { tenants } = useSquawk("tenants");
+    const { tenants, tenantId } = useSquawk("tenants", "tenantId");
     const loading = usePending("tenants");
 
     const items = tenants.map(t => ({
@@ -16,6 +16,7 @@ export const SelectTenant = () => {
     return (
         <Dropdown<string>
             loading={loading}
+            value={tenantId || undefined}
             items={items}
             onChange={tenant => listOrganizations(tenant)}
             noData="No Azure tenants found"

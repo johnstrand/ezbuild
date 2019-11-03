@@ -4,10 +4,11 @@ import { listBuildDefinitions, listReleaseDefinitions } from "utils/Actions";
 import Dropdown from "components/Common/Dropdown";
 
 const SelectProject = () => {
-    const { projects, tenantId, organizationId } = useSquawk(
+    const { projects, tenantId, organizationId, projectId } = useSquawk(
         "projects",
         "tenantId",
-        "organizationId"
+        "organizationId",
+        "projectId"
     );
     const loading = usePending("projects");
 
@@ -36,6 +37,7 @@ const SelectProject = () => {
             onChange={selectProject}
             loading={loading}
             noData="No projects found"
+            value={projectId || undefined}
         />
     );
 };
