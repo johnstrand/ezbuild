@@ -1,11 +1,5 @@
 import React, { useReducer } from "react";
-import {
-    Dialog,
-    FormGroup,
-    HTMLSelect,
-    InputGroup,
-    Spinner
-} from "@blueprintjs/core";
+import { Dialog, Spinner } from "@blueprintjs/core";
 import showToast from "utils/AppToaster";
 import { Repository, Variables, Queue } from "utils/ApiTypes";
 import { useSquawk } from "utils/Store";
@@ -18,10 +12,12 @@ import { branchCompare } from "utils/Comparers";
 import { convertVariables } from "utils/Utils";
 import {
     HideableNonIdealState,
-    HideableFormGroup
+    HideableSpinner
 } from "components/Common/Hideable";
 import Button from "components/Common/Button";
 import buildQueueReducer from "./BuildQueue.state";
+import SelectBranch from "./SelectBranch";
+import BuildVariableList from "./BuildVariableList";
 
 interface Props {
     id: number;
@@ -77,6 +73,7 @@ const BuildQueue = (props: Props) => {
         // TODO: Copy variables into local state and make editable
     };
 
+    // Move this method someplace else
     const addToQueue = async () => {
         const request = {
             queue: {
@@ -88,7 +85,7 @@ const BuildQueue = (props: Props) => {
             project: {
                 id: projectId!
             },
-            sourceBranch: `refs/heads/${branch}`,
+            sourceBranch: `refs/heads/${branch}`, // See if we can't improve on this
             sourceVersion: "",
             reason: 1,
             demands: [],
@@ -103,6 +100,7 @@ const BuildQueue = (props: Props) => {
 
     return (
         <>
+            {/* Tooltips are broken on disabled buttons, find a workaround */}
             <Button
                 icon="play"
                 intent="primary"
@@ -121,49 +119,23 @@ const BuildQueue = (props: Props) => {
             >
                 <DialogHeader content={`Queue new build for ${props.name}`} />
                 <DialogBody>
-                    {loading && <Spinner size={Spinner.SIZE_LARGE} />}
+                    <HideableSpinner
+                        size={Spinner.SIZE_LARGE}
+                        hidden={!loading}
+                    />
                     <HideableNonIdealState
                         hidden={loading || branches.length > 0}
                         title="No branches found"
                     />
-                    <HideableFormGroup
-                        label="Branch"
-                        labelFor="branches"
-                        hidden={loading || branches.length === 0}
-                    >
-                        <HTMLSelect
-                            id="branches"
-                            fill
-                            onChange={({ currentTarget: { value } }) =>
-                                dispatch({ branch: value })
-                            }
-                        >
-                            {branches.map(branch => (
-                                <option key={branch.name} value={branch.name}>
-                                    {branch.name} ({branch.aheadCount} ahead,{" "}
-                                    {branch.behindCount} behind)
-                                </option>
-                            ))}
-                        </HTMLSelect>
-                    </HideableFormGroup>
-                    {!loading &&
-                        branches.length > 0 &&
-                        Object.keys(props.variables || {}).map(key => (
-                            <FormGroup
-                                key={key}
-                                label={key}
-                                labelFor={`var_${key}`}
-                            >
-                                <InputGroup
-                                    id={`var_${key}`}
-                                    data-lpignore="true"
-                                    autoComplete="off"
-                                    readOnly={true} // Should actually check if override is allowed
-                                    value={props.variables[key].value}
-                                    onChange={() => {}} // Read-only for now
-                                />
-                            </FormGroup>
-                        ))}
+                    <SelectBranch
+                        loading={loading}
+                        branches={branches}
+                        onChange={value => dispatch({ branch: value })}
+                    />
+                    <BuildVariableList
+                        variables={props.variables}
+                        visible={!loading && branches.length > 0}
+                    />
                 </DialogBody>
                 <DialogFooterActions>
                     <Button
