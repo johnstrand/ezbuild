@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSquawk, usePending } from "utils/Store";
 import { HTMLTable, Spinner } from "@blueprintjs/core";
-import HTMLTableNoDataRow from "components/Common/HTMLTableNoDataRow";
-import HTMLTableSingleHeader from "components/Common/HTMLTableSingleHeader";
+import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
+import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader";
 import { stringCompare } from "utils/Comparers";
 import BuildDefinitionListItem from "./BuildDefinitionListItem";
 import Button from "components/Common/Button";

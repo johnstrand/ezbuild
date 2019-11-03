@@ -3,9 +3,9 @@ import { Dialog, HTMLTable } from "@blueprintjs/core";
 import { useSquawk } from "utils/Store";
 import { Build } from "utils/ApiTypes";
 import BuildHistoryListItem from "./BuildHistoryListItem";
-import HTMLTableSingleHeader from "components/Common/HTMLTableSingleHeader";
-import HTMLTableNoDataRow from "components/Common/HTMLTableNoDataRow";
-import HTMLTableLoadingDataRow from "components/Common/HTMLTableLoadingDataRow";
+import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader";
+import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
+import HTMLTableLoadingDataRow from "components/Common/Table/HTMLTableLoadingDataRow";
 import Button from "components/Common/Button";
 import { DialogHeader, DialogBody } from "components/Common/Dialog";
 
