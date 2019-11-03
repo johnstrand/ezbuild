@@ -6,16 +6,16 @@ import {
     Organization
 } from "utils/ApiTypes";
 import {
-    Api,
     ProjectService,
     BuildService,
     RepositoryService,
     ReleaseService,
     ProfileService,
     AccountService
-} from "utils/Api";
+} from "utils/Api/Interfaces";
 import { Account } from "msal";
 import { getAccount } from "utils/Auth";
+import Api from "./Api/Api";
 
 interface AppState {
     authority: string;
@@ -54,10 +54,10 @@ export const {
     projects: [],
     projectId: null,
     buildDefinitions: [],
-    projectService: Api.projects,
-    buildService: Api.builds,
-    repositoryService: Api.repository,
-    releaseService: Api.release,
-    profileService: Api.profile,
-    accountService: Api.account
+    projectService: Api.projectService,
+    buildService: Api.buildService,
+    repositoryService: Api.repositoryService,
+    releaseService: Api.releaseService,
+    profileService: Api.profileService,
+    accountService: Api.accountService
 });
