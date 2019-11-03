@@ -100,7 +100,7 @@ export const listProjects = action<{
             organizationId
         )).sort(projectCompare);
 
-        const { projectId } = getNavSelection();
+        const { projectId, page } = getNavSelection();
 
         const selectedProjectId =
             projects.length > 0
@@ -118,6 +118,12 @@ export const listProjects = action<{
             },
             () => {
                 if (selectedProjectId) {
+                    window.location.hash = [
+                        tenantId,
+                        organizationId,
+                        selectedProjectId,
+                        page
+                    ].join("/");
                     listBuildDefinitions({
                         tenantId,
                         organizationId,
@@ -152,9 +158,6 @@ export const listBuildDefinitions = action<{
     organizationId: string;
     project: string;
 }>(async ({ buildService }, { tenantId, organizationId, project }) => {
-    window.location.hash = [tenantId, organizationId, project, "builds"].join(
-        "/"
-    );
     pending(["buildDefinitions"], true);
     const buildDefinitions = await buildService.listDefinitions(
         tenantId,
