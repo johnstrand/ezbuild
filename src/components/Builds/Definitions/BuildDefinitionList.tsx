@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useSquawk, usePending } from "../../../utils/Store";
+import { useSquawk, usePending } from "utils/Store";
 import { HTMLTable, Spinner } from "@blueprintjs/core";
-import { HTMLTableNoDataRow } from "../../Common/HTMLTableNoDataRow";
-import { HTMLTableSingleHeader } from "../../Common/HTMLTableSingleHeader";
-import { stringCompare } from "../../../utils/Comparers";
+import { HTMLTableNoDataRow } from "components/Common/HTMLTableNoDataRow";
+import { HTMLTableSingleHeader } from "components/Common/HTMLTableSingleHeader";
+import { stringCompare } from "utils/Comparers";
 import BuildDefinitionListItem from "./BuildDefinitionListItem";
-import { Button } from "../../Common/Button";
-import { listBuildDefinitions } from "../../../utils/Actions";
+import { Button } from "components/Common/Button";
+import { listBuildDefinitions } from "utils/Actions";
 
 export const BuildDefinitionList = () => {
     const { buildDefinitions, tenantId, organizationId, projectId } = useSquawk(
