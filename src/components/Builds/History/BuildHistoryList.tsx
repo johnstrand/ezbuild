@@ -8,7 +8,7 @@ import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
 import HTMLTableLoadingDataRow from "components/Common/Table/HTMLTableLoadingDataRow";
 import Button from "components/Common/Button";
 import { DialogHeader, DialogBody } from "components/Common/Dialog";
-import { useAsync, AsyncState } from "utils/UseAsync";
+import useAsync, { AsyncState } from "react-hooks-useasync";
 
 interface Props {
     id: number;

@@ -149,6 +149,8 @@ export const listReleaseDefinitions = action<{
     organizationId: string;
     project: string;
 }>(async ({ releaseService }, { tenantId, organizationId, project }) => {
+    const { page } = getNavSelection();
+    window.location.hash = [tenantId, organizationId, project, page].join("/");
     await releaseService.listDefinitions(tenantId, organizationId, project);
     return [];
 });
@@ -158,6 +160,8 @@ export const listBuildDefinitions = action<{
     organizationId: string;
     project: string;
 }>(async ({ buildService }, { tenantId, organizationId, project }) => {
+    const { page } = getNavSelection();
+    window.location.hash = [tenantId, organizationId, project, page].join("/");
     pending(["buildDefinitions"], true);
     const buildDefinitions = await buildService.listDefinitions(
         tenantId,
