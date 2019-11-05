@@ -1,19 +1,14 @@
 import React, { useState } from "react";
 import { Dialog, HTMLTable } from "@blueprintjs/core";
 import { useSquawk } from "utils/Store";
-import {
-    Build,
-    HIDDEN,
-    LOADING_COMPLETE,
-    VISIBLE,
-    LOADING
-} from "utils/ApiTypes";
+import { HIDDEN, VISIBLE } from "utils/ApiTypes";
 import BuildHistoryListItem from "./BuildHistoryListItem";
 import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader";
 import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
 import HTMLTableLoadingDataRow from "components/Common/Table/HTMLTableLoadingDataRow";
 import Button from "components/Common/Button";
 import { DialogHeader, DialogBody } from "components/Common/Dialog";
+import { useAsync, AsyncState } from "utils/UseAsync";
 
 interface Props {
     id: number;
@@ -22,9 +17,6 @@ interface Props {
 
 const BuildHistoryList = (props: Props) => {
     const [visible, setVisible] = useState(HIDDEN);
-    const [loading, setLoading] = useState(LOADING_COMPLETE);
-
-    const [list, setList] = useState<Build[]>([]);
 
     const { buildService, organizationId, projectId, tenantId } = useSquawk(
         "buildService",
@@ -33,18 +25,16 @@ const BuildHistoryList = (props: Props) => {
         "tenantId"
     );
 
+    const [history, state, listHistory] = useAsync(
+        buildService.listHistory,
+        []
+    );
+
+    const loading = state === AsyncState.Pending;
+
     const loadHistory = async () => {
         setVisible(VISIBLE);
-        setLoading(LOADING);
-        setList([]);
-        const history = await buildService.listHistory(
-            tenantId!,
-            organizationId!,
-            projectId!,
-            props.id
-        );
-        setLoading(LOADING_COMPLETE);
-        setList(history);
+        listHistory(tenantId!, organizationId!, projectId!, props.id);
     };
 
     return (
@@ -82,10 +72,10 @@ const BuildHistoryList = (props: Props) => {
                             />
                             <HTMLTableNoDataRow
                                 columns={5}
-                                visible={!loading && list.length === 0}
+                                visible={!loading && history.length === 0}
                                 text="Found no previous builds"
                             />
-                            {list.map(item => (
+                            {history.map(item => (
                                 <BuildHistoryListItem
                                     key={item.id}
                                     item={item}
