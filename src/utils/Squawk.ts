@@ -100,20 +100,20 @@ export default function createStore<TStore>(globalState: TStore) {
   function get<TContext extends StoreProps>(
     context: TContext
   ): TStore[TContext];
-  function get(): TStore;
+  function get(): Readonly<TStore>;
   function get<TContext extends StoreProps>(context?: TContext) {
     return context ? globalState[context] : globalState;
   }
 
   function action(
     reducer: (value: TStore) => Promise<Partial<TStore>> | Partial<TStore>
-  ): () => Promise<TStore>;
+  ): () => Promise<Readonly<TStore>>;
   function action<T>(
     reducer: (
       value: TStore,
       payload: T
     ) => Promise<Partial<TStore>> | Partial<TStore>
-  ): (payload: T) => Promise<TStore>;
+  ): (payload: T) => Promise<Readonly<TStore>>;
   function action(
     reducer: (
       value: TStore,
@@ -124,15 +124,6 @@ export default function createStore<TStore>(globalState: TStore) {
       const value = await Promise.resolve(reducer(globalState, payload));
       internalUpdate(value);
       return globalState;
-      /*
-      const updates = await Promise.resolve(reducer(globalState, payload));
-      for (const update of updates) {
-        internalUpdate(
-          await Promise.resolve(
-            typeof update === "function" ? update() : update
-          )
-        );
-      }*/
     };
   }
 
