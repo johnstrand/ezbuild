@@ -1,27 +1,31 @@
 import React from "react";
 import { useSquawk, usePending } from "utils/Store";
-import { listOrganizations } from "utils/Actions";
+import { loadSelection } from "utils/Actions";
 import Dropdown from "components/Common/Dropdown";
 
-export const SelectTenant = () => {
-    const { tenants, tenantId } = useSquawk("tenants", "tenantId");
-    const loading = usePending("tenants");
+const selectTenant = async (tenantId: string) => {
+  loadSelection({ tenantId });
+};
 
-    const items = tenants.map(t => ({
-        key: t.tenantId,
-        value: t.tenantId,
-        text: `${t.displayName} (${t.domains[t.domains.length - 1]})`
-    }));
+const SelectTenant = () => {
+  const { tenants, tenantId } = useSquawk("tenants", "tenantId");
+  const loading = usePending("tenants");
 
-    return (
-        <Dropdown<string>
-            loading={loading}
-            value={tenantId || undefined}
-            items={items}
-            onChange={tenant => listOrganizations(tenant)}
-            noData="No Azure tenants found"
-        />
-    );
+  const items = tenants.map(t => ({
+    key: t.tenantId,
+    value: t.tenantId,
+    text: `${t.displayName} (${t.domains[t.domains.length - 1]})`
+  }));
+
+  return (
+    <Dropdown<string>
+      loading={loading}
+      value={tenantId || undefined}
+      items={items}
+      onChange={tenant => selectTenant(tenant)}
+      noData="No Azure tenants found"
+    />
+  );
 };
 
 export default SelectTenant;

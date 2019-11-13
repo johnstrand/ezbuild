@@ -3,175 +3,189 @@ import { getTenants, getAccount } from "utils/Auth";
 import { AzureTenant } from "utils/ApiTypes";
 import showToast from "utils/AppToaster";
 import {
-    tenantCompare,
-    organizationCompare,
-    projectCompare
+  tenantCompare,
+  organizationCompare,
+  projectCompare
 } from "./Comparers";
 import getNavSelection from "./NavSelection";
 
 export const addTenantFilter = action<AzureTenant>((state, tenant) => {
-    if (state.tenantFilter.some(t => t.tenantId === tenant.tenantId)) {
-        showToast(
-            "That tenant was already filtered, sorry about that",
-            "warning"
-        );
-        return [];
-    }
+  if (state.tenantFilter.some(t => t.tenantId === tenant.tenantId)) {
+    showToast("That tenant was already filtered, sorry about that", "warning");
+    return {};
+  }
 
-    showToast(
-        "Filter added, please reload page if the filter fails to apply",
-        "success"
-    );
-    const tenantFilter = [...state.tenantFilter, tenant];
+  showToast(
+    "Filter added, please reload page if the filter fails to apply",
+    "success"
+  );
+  const tenantFilter = [...state.tenantFilter, tenant];
 
-    localStorage.setItem("tenantFilter", JSON.stringify(tenantFilter));
+  localStorage.setItem("tenantFilter", JSON.stringify(tenantFilter));
 
-    return [{ tenantFilter }, listTenants];
+  return { tenantFilter };
 });
 
 export const listTenants = action(async state => {
-    pending(["tenants", "organizations", "projects", "buildDefinitions"], true);
-    const tenants = (await getTenants())
-        .filter(t => !state.tenantFilter.some(f => f.tenantId === t.tenantId))
-        .sort(tenantCompare);
+  pending(["tenants", "organizations", "projects", "buildDefinitions"], true);
+  const tenants = (await getTenants())
+    .filter(t => !state.tenantFilter.some(f => f.tenantId === t.tenantId))
+    .sort(tenantCompare);
 
-    pending(
-        ["tenants", "organizations", "projects", "buildDefinitions"],
-        false
-    );
+  pending(["tenants", "organizations", "projects", "buildDefinitions"], false);
 
-    const { tenantId } = getNavSelection();
+  const { tenantId } = getNavSelection();
 
-    const selectedTenantId =
-        tenants.length > 0
-            ? tenants.some(t => t.tenantId === tenantId)
-                ? tenantId
-                : tenants[0].tenantId
-            : null;
+  const selectedTenantId =
+    tenants.length > 0
+      ? tenants.some(t => t.tenantId === tenantId)
+        ? tenantId
+        : tenants[0].tenantId
+      : null;
 
-    return [
-        {
-            tenants,
-            account: getAccount(),
-            tenantId: selectedTenantId
-        },
-        () => selectedTenantId && listOrganizations(selectedTenantId)
-    ];
+  return {
+    tenants,
+    account: getAccount(),
+    tenantId: selectedTenantId
+  };
 });
 
 export const listOrganizations = action<string>(async (state, tenantId) => {
-    pending(["organizations", "projects", "buildDefinitions"], true);
-    const profile = await state.profileService.get(tenantId);
-    const organizations = (await state.accountService.listAccounts(
-        tenantId,
-        profile.id
-    )).sort(organizationCompare);
+  pending(["organizations", "projects", "buildDefinitions"], true);
+  const profile = await state.profileService.get(tenantId);
+  const organizations = (
+    await state.accountService.listAccounts(tenantId, profile.id)
+  ).sort(organizationCompare);
 
-    const { organizationId } = getNavSelection();
+  const { organizationId } = getNavSelection();
 
-    const selectedOrganizationId =
-        organizations.length > 0
-            ? organizations.some(o => o.accountName === organizationId)
-                ? organizationId
-                : organizations[0].accountName
-            : null;
+  const selectedOrganizationId =
+    organizations.length > 0
+      ? organizations.some(o => o.accountName === organizationId)
+        ? organizationId
+        : organizations[0].accountName
+      : null;
 
-    pending(["organizations", "projects", "buildDefinitions"], false);
-    return [
-        {
-            organizations,
-            tenantId,
-            organizationId: selectedOrganizationId
-        },
-        () =>
-            selectedOrganizationId &&
-            listProjects({ tenantId, organizationId: selectedOrganizationId })
-    ];
+  pending(["organizations", "projects", "buildDefinitions"], false);
+  return {
+    organizations,
+    tenantId,
+    organizationId: selectedOrganizationId
+  };
 });
 
 export const listProjects = action<{
-    tenantId: string;
-    organizationId: string;
+  tenantId: string;
+  organizationId: string;
 }>(async ({ projectService }, { tenantId, organizationId }) => {
-    pending(["projects", "buildDefinitions"], true);
-    try {
-        const projects = (await projectService.list(
-            tenantId,
-            organizationId
-        )).sort(projectCompare);
+  pending(["projects", "buildDefinitions"], true);
+  try {
+    const projects = (await projectService.list(tenantId, organizationId)).sort(
+      projectCompare
+    );
 
-        const { projectId, page } = getNavSelection();
+    const { projectId, page } = getNavSelection();
 
-        const selectedProjectId =
-            projects.length > 0
-                ? projects.some(p => p.id === projectId)
-                    ? projectId
-                    : projects[0].id
-                : null;
+    const selectedProjectId =
+      projects.length > 0
+        ? projects.some(p => p.id === projectId)
+          ? projectId
+          : projects[0].id
+        : null;
 
-        return [
-            {
-                tenantId,
-                projects,
-                organizationId,
-                projectId: selectedProjectId
-            },
-            () => {
-                if (selectedProjectId) {
-                    window.location.hash = [
-                        tenantId,
-                        organizationId,
-                        selectedProjectId,
-                        page
-                    ].join("/");
-                    listBuildDefinitions({
-                        tenantId,
-                        organizationId,
-                        project: selectedProjectId
-                    });
-                    listReleaseDefinitions({
-                        tenantId,
-                        organizationId,
-                        project: selectedProjectId
-                    });
-                }
-            }
-        ];
-    } catch {
-    } finally {
-        pending(["projects", "buildDefinitions"], false);
+    if (selectedProjectId) {
+      window.location.hash = [
+        tenantId,
+        organizationId,
+        selectedProjectId,
+        page
+      ].join("/");
     }
-    return [];
+
+    return {
+      tenantId,
+      projects,
+      organizationId,
+      projectId: selectedProjectId
+    };
+  } catch {
+  } finally {
+    pending(["projects", "buildDefinitions"], false);
+  }
+  return {};
 });
 
 export const listReleaseDefinitions = action<{
-    tenantId: string;
-    organizationId: string;
-    project: string;
+  tenantId: string;
+  organizationId: string;
+  project: string;
 }>(async ({ releaseService }, { tenantId, organizationId, project }) => {
-    const { page } = getNavSelection();
-    window.location.hash = [tenantId, organizationId, project, page].join("/");
-    await releaseService.listDefinitions(tenantId, organizationId, project);
-    return [];
+  const { page } = getNavSelection();
+  window.location.hash = [tenantId, organizationId, project, page].join("/");
+  await releaseService.listDefinitions(tenantId, organizationId, project);
+  return {};
 });
 
 export const listBuildDefinitions = action<{
-    tenantId: string;
-    organizationId: string;
-    project: string;
+  tenantId: string;
+  organizationId: string;
+  project: string;
 }>(async ({ buildService }, { tenantId, organizationId, project }) => {
-    const { page } = getNavSelection();
-    window.location.hash = [tenantId, organizationId, project, page].join("/");
-    pending(["buildDefinitions"], true);
-    const buildDefinitions = await buildService.listDefinitions(
-        tenantId,
-        organizationId,
-        project
-    );
-    pending(["buildDefinitions"], false);
-    return [{ buildDefinitions, projectId: project }];
+  const { page } = getNavSelection();
+  window.location.hash = [tenantId, organizationId, project, page].join("/");
+  pending(["buildDefinitions"], true);
+  const buildDefinitions = await buildService.listDefinitions(
+    tenantId,
+    organizationId,
+    project
+  );
+  pending(["buildDefinitions"], false);
+  return { buildDefinitions, projectId: project };
 });
 
+type Selection = {
+  tenantId?: string;
+  organizationId?: string;
+  projectId?: string;
+};
+
+export const loadSelection = async (selection?: Selection) => {
+  selection = selection || {};
+
+  if (!selection.tenantId) {
+    const { tenantId } = await listTenants();
+    if (!tenantId) {
+      return;
+    }
+    selection.tenantId = tenantId!;
+  }
+
+  if (!selection.organizationId) {
+    const { organizationId } = await listOrganizations(selection.tenantId);
+    if (!organizationId) {
+      return;
+    }
+    selection.organizationId = organizationId;
+  }
+
+  if (!selection.projectId) {
+    const { projectId } = await listProjects({
+      tenantId: selection.tenantId!,
+      organizationId: selection.organizationId!
+    });
+    if (!projectId) {
+      return;
+    }
+    selection.projectId = projectId;
+  }
+
+  await listBuildDefinitions({
+    tenantId: selection.tenantId,
+    organizationId: selection.organizationId,
+    project: selection.projectId!
+  });
+};
+
 if (getAccount()) {
-    listTenants();
+  loadSelection();
 }
