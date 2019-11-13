@@ -3,7 +3,8 @@ import {
   Project,
   BuildDefinition,
   AzureTenant,
-  Organization
+  Organization,
+  ReleaseDefinition
 } from "utils/ApiTypes";
 import {
   ProjectService,
@@ -28,6 +29,7 @@ interface AppState {
   projects: Project[];
   projectId: string | null;
   buildDefinitions: BuildDefinition[];
+  releaseDefinitions: ReleaseDefinition[];
   projectService: ProjectService;
   buildService: BuildService;
   repositoryService: RepositoryService;
@@ -49,6 +51,7 @@ export const { action, useSquawk, pending, usePending, update } = createStore<
   projects: [],
   projectId: null,
   buildDefinitions: [],
+  releaseDefinitions: [],
   projectService: Api.projectService,
   buildService: Api.buildService,
   repositoryService: Api.repositoryService,

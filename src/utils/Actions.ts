@@ -118,29 +118,35 @@ export const listProjects = action<{
 export const listReleaseDefinitions = action<{
   tenantId: string;
   organizationId: string;
-  project: string;
-}>(async ({ releaseService }, { tenantId, organizationId, project }) => {
+  projectId: string;
+}>(async ({ releaseService }, { tenantId, organizationId, projectId }) => {
   const { page } = getNavSelection();
-  window.location.hash = [tenantId, organizationId, project, page].join("/");
-  await releaseService.listDefinitions(tenantId, organizationId, project);
-  return {};
+  window.location.hash = [tenantId, organizationId, projectId, page].join("/");
+  pending("releaseDefinitions", true);
+  const releaseDefinitions = await releaseService.listDefinitions(
+    tenantId,
+    organizationId,
+    projectId
+  );
+  pending("releaseDefinitions", false);
+  return { releaseDefinitions, projectId };
 });
 
 export const listBuildDefinitions = action<{
   tenantId: string;
   organizationId: string;
-  project: string;
-}>(async ({ buildService }, { tenantId, organizationId, project }) => {
+  projectId: string;
+}>(async ({ buildService }, { tenantId, organizationId, projectId }) => {
   const { page } = getNavSelection();
-  window.location.hash = [tenantId, organizationId, project, page].join("/");
-  pending(["buildDefinitions"], true);
+  window.location.hash = [tenantId, organizationId, projectId, page].join("/");
+  pending("buildDefinitions", true);
   const buildDefinitions = await buildService.listDefinitions(
     tenantId,
     organizationId,
-    project
+    projectId
   );
-  pending(["buildDefinitions"], false);
-  return { buildDefinitions, projectId: project };
+  pending("buildDefinitions", false);
+  return { buildDefinitions, projectId };
 });
 
 type Selection = {
@@ -182,7 +188,7 @@ export const loadSelection = async (selection?: Selection) => {
   await listBuildDefinitions({
     tenantId: selection.tenantId,
     organizationId: selection.organizationId,
-    project: selection.projectId!
+    projectId: selection.projectId!
   });
 };
 

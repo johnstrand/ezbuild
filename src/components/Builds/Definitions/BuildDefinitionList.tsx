@@ -9,82 +9,78 @@ import Button from "components/Common/Button";
 import { listBuildDefinitions } from "utils/Actions";
 
 const BuildDefinitionList = () => {
-    const { buildDefinitions, tenantId, organizationId, projectId } = useSquawk(
-        "buildDefinitions",
-        "tenantId",
-        "organizationId",
-        "projectId"
-    );
-    const loading = usePending("buildDefinitions");
-    const [refreshing, setRefreshing] = useState(false);
+  const { buildDefinitions, tenantId, organizationId, projectId } = useSquawk(
+    "buildDefinitions",
+    "tenantId",
+    "organizationId",
+    "projectId"
+  );
+  const loading = usePending("buildDefinitions");
+  const [refreshing, setRefreshing] = useState(false);
 
-    const refresh = async () => {
-        setRefreshing(true);
-        await listBuildDefinitions({
-            tenantId: tenantId!,
-            organizationId: organizationId!,
-            project: projectId!
-        });
-        setRefreshing(false);
-    };
-
-    useEffect(() => {
-        const id = window.setInterval(() => {
-            if (
-                refreshing ||
-                loading ||
-                !buildDefinitions.some(b => b.repository.type === "TfsGit")
-            ) {
-                return;
-            }
-            refresh();
-        }, 60000);
-
-        return () => window.clearInterval(id);
+  const refresh = async () => {
+    setRefreshing(true);
+    await listBuildDefinitions({
+      tenantId: tenantId!,
+      organizationId: organizationId!,
+      projectId: projectId!
     });
+    setRefreshing(false);
+  };
 
-    if (loading && !refreshing) {
-        return <Spinner size={Spinner.SIZE_LARGE} />;
-    }
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      if (
+        refreshing ||
+        loading ||
+        !buildDefinitions.some(b => b.repository.type === "TfsGit")
+      ) {
+        return;
+      }
+      refresh();
+    }, 60000);
 
-    return (
-        <div>
-            <Button
-                icon="refresh"
-                disabled={refreshing}
-                tooltip="Refresh builds"
-                onClick={refresh}
-            />
-            <HTMLTable bordered striped style={{ width: "100%" }}>
-                <HTMLTableSingleHeader>
-                    <th>Name</th>
-                    <th>Path</th>
-                    <th>Repository</th>
-                    <th>Latest build</th>
-                    <th></th>
-                </HTMLTableSingleHeader>
-                <tbody>
-                    <HTMLTableNoDataRow
-                        columns={5}
-                        text="This project does not have any builds defined"
-                        visible={buildDefinitions.length === 0}
-                    />
-                    {buildDefinitions
-                        .sort(
-                            (a, b) =>
-                                stringCompare(a.path, b.path) ||
-                                stringCompare(a.name, b.name)
-                        )
-                        .map(b => (
-                            <BuildDefinitionListItem
-                                key={b.id}
-                                definition={b}
-                            />
-                        ))}
-                </tbody>
-            </HTMLTable>
-        </div>
-    );
+    return () => window.clearInterval(id);
+  });
+
+  if (loading && !refreshing) {
+    return <Spinner size={Spinner.SIZE_LARGE} />;
+  }
+
+  return (
+    <div>
+      <Button
+        icon="refresh"
+        disabled={refreshing}
+        tooltip="Refresh builds"
+        onClick={refresh}
+      />
+      <HTMLTable bordered striped style={{ width: "100%" }}>
+        <HTMLTableSingleHeader>
+          <th>Name</th>
+          <th>Path</th>
+          <th>Repository</th>
+          <th>Latest build</th>
+          <th></th>
+        </HTMLTableSingleHeader>
+        <tbody>
+          <HTMLTableNoDataRow
+            columns={5}
+            text="This project does not have any builds defined"
+            visible={buildDefinitions.length === 0}
+          />
+          {buildDefinitions
+            .sort(
+              (a, b) =>
+                stringCompare(a.path, b.path) || stringCompare(a.name, b.name)
+            )
+            .map(b => (
+              <BuildDefinitionListItem key={b.id} definition={b} />
+            ))}
+        </tbody>
+      </HTMLTable>
+    </div>
+  );
 };
 
 export default BuildDefinitionList;
