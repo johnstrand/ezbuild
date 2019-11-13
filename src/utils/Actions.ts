@@ -27,12 +27,30 @@ export const addTenantFilter = action<AzureTenant>((state, tenant) => {
 });
 
 export const listTenants = action(async state => {
-  pending(["tenants", "organizations", "projects", "buildDefinitions"], true);
+  pending(
+    [
+      "tenants",
+      "organizations",
+      "projects",
+      "buildDefinitions",
+      "releaseDefinitions"
+    ],
+    true
+  );
   const tenants = (await getTenants())
     .filter(t => !state.tenantFilter.some(f => f.tenantId === t.tenantId))
     .sort(tenantCompare);
 
-  pending(["tenants", "organizations", "projects", "buildDefinitions"], false);
+  pending(
+    [
+      "tenants",
+      "organizations",
+      "projects",
+      "buildDefinitions",
+      "releaseDefinitions"
+    ],
+    false
+  );
 
   const { tenantId } = getNavSelection();
 
@@ -51,7 +69,10 @@ export const listTenants = action(async state => {
 });
 
 export const listOrganizations = action<string>(async (state, tenantId) => {
-  pending(["organizations", "projects", "buildDefinitions"], true);
+  pending(
+    ["organizations", "projects", "buildDefinitions", "releaseDefinitions"],
+    true
+  );
   const profile = await state.profileService.get(tenantId);
   const organizations = (
     await state.accountService.listAccounts(tenantId, profile.id)
@@ -66,7 +87,10 @@ export const listOrganizations = action<string>(async (state, tenantId) => {
         : organizations[0].accountName
       : null;
 
-  pending(["organizations", "projects", "buildDefinitions"], false);
+  pending(
+    ["organizations", "projects", "buildDefinitions", "releaseDefinitions"],
+    false
+  );
   return {
     organizations,
     tenantId,
@@ -78,7 +102,7 @@ export const listProjects = action<{
   tenantId: string;
   organizationId: string;
 }>(async ({ projectService }, { tenantId, organizationId }) => {
-  pending(["projects", "buildDefinitions"], true);
+  pending(["projects", "buildDefinitions", "releaseDefinitions"], true);
   try {
     const projects = (await projectService.list(tenantId, organizationId)).sort(
       projectCompare
@@ -110,7 +134,7 @@ export const listProjects = action<{
     };
   } catch {
   } finally {
-    pending(["projects", "buildDefinitions"], false);
+    pending(["projects", "buildDefinitions", "releaseDefinitions"], false);
   }
   return {};
 });
@@ -128,8 +152,13 @@ export const listReleaseDefinitions = action<{
     organizationId,
     projectId
   );
+  const approvals = await releaseService.listApprovals(
+    tenantId,
+    organizationId,
+    projectId
+  );
   pending("releaseDefinitions", false);
-  return { releaseDefinitions, projectId };
+  return { releaseDefinitions, approvals, projectId };
 });
 
 export const listBuildDefinitions = action<{
@@ -189,6 +218,12 @@ export const loadSelection = async (selection?: Selection) => {
     tenantId: selection.tenantId,
     organizationId: selection.organizationId,
     projectId: selection.projectId!
+  });
+
+  await listReleaseDefinitions({
+    tenantId: selection.tenantId,
+    organizationId: selection.organizationId,
+    projectId: selection.projectId
   });
 };
 

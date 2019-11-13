@@ -3,7 +3,7 @@ import { useSquawk, usePending } from "utils/Store";
 import { HTMLTable, Spinner } from "@blueprintjs/core";
 import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
 import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader";
-import { stringCompare } from "utils/Comparers";
+import { buildDefinitionCompare } from "utils/Comparers";
 import BuildDefinitionListItem from "./BuildDefinitionListItem";
 import Button from "components/Common/Button";
 import { listBuildDefinitions } from "utils/Actions";
@@ -69,14 +69,9 @@ const BuildDefinitionList = () => {
             text="This project does not have any builds defined"
             visible={buildDefinitions.length === 0}
           />
-          {buildDefinitions
-            .sort(
-              (a, b) =>
-                stringCompare(a.path, b.path) || stringCompare(a.name, b.name)
-            )
-            .map(b => (
-              <BuildDefinitionListItem key={b.id} definition={b} />
-            ))}
+          {buildDefinitions.sort(buildDefinitionCompare).map(b => (
+            <BuildDefinitionListItem key={b.id} definition={b} />
+          ))}
         </tbody>
       </HTMLTable>
     </div>
