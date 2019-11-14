@@ -48,7 +48,7 @@ const BuildDefinitionList = () => {
     }, 60000);
 
     return () => window.clearInterval(id);
-  }, [tenantId, organizationId, projectId]);
+  });
 
   if (loading && projectsLoading) {
     return <Spinner size={Spinner.SIZE_LARGE} />;

@@ -1,12 +1,5 @@
 import createStore from "utils/Squawk"; //"squawk-react";
-import {
-  Project,
-  BuildDefinition,
-  AzureTenant,
-  Organization,
-  ReleaseDefinition,
-  Approval
-} from "utils/ApiTypes";
+import { Project, AzureTenant, Organization } from "utils/ApiTypes";
 import {
   ProjectService,
   BuildService,
