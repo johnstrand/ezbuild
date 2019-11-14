@@ -121,39 +121,41 @@ type Selection = {
   projectId?: string;
 };
 
-export const loadSelection = action<Selection>(async (_, selection) => {
-  selection = selection || {};
+export const loadSelection = action<Selection | undefined>(
+  async (_, selection) => {
+    selection = selection || getNavSelection();
 
-  if (!selection.tenantId) {
-    const { tenantId } = await listTenants();
-    if (!tenantId) {
-      return {};
+    if (!selection.tenantId) {
+      const { tenantId } = await listTenants();
+      if (!tenantId) {
+        return {};
+      }
+      selection.tenantId = tenantId!;
     }
-    selection.tenantId = tenantId!;
-  }
 
-  if (!selection.organizationId) {
-    const { organizationId } = await listOrganizations(selection.tenantId);
-    if (!organizationId) {
-      return {};
+    if (!selection.organizationId) {
+      const { organizationId } = await listOrganizations(selection.tenantId);
+      if (!organizationId) {
+        return {};
+      }
+      selection.organizationId = organizationId;
     }
-    selection.organizationId = organizationId;
-  }
 
-  if (!selection.projectId) {
-    const { projectId } = await listProjects({
-      tenantId: selection.tenantId!,
-      organizationId: selection.organizationId!
-    });
-    if (!projectId) {
-      return {};
+    if (!selection.projectId) {
+      const { projectId } = await listProjects({
+        tenantId: selection.tenantId!,
+        organizationId: selection.organizationId!
+      });
+      if (!projectId) {
+        return {};
+      }
+      selection.projectId = projectId;
     }
-    selection.projectId = projectId;
-  }
 
-  return selection;
-});
+    return selection;
+  }
+);
 
 if (getAccount()) {
-  loadSelection({});
+  loadSelection(undefined);
 }

@@ -35,6 +35,7 @@ const ReleaseDefinitionList = () => {
     setLoading(false);
   };
 
+  /*
   useEffect(() => {
     if (!tenantId || !organizationId || !projectId) {
       return;
@@ -48,7 +49,8 @@ const ReleaseDefinitionList = () => {
     }, 60000);
 
     return () => window.clearInterval(id);
-  });
+  }, []);
+  */
 
   if (loading && projectsLoading) {
     return <Spinner size={Spinner.SIZE_LARGE} />;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSquawk, usePending } from "utils/Store";
 import { HTMLTable, Spinner } from "@blueprintjs/core";
 import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
@@ -16,11 +16,21 @@ const BuildDefinitionList = () => {
     "projectId"
   );
 
+  console.log(projectId);
+
   const projectsLoading = usePending("projects");
   const [loading, setLoading] = useState(true);
   const [definitions, setDefinitions] = useState<BuildDefinition[]>([]);
 
-  const load = async () => {
+  const load = useCallback(async () => {
+    console.log("Loading");
+    if (!tenantId || !organizationId || !projectId) {
+      return;
+    }
+    console.log({ loading, projectsLoading });
+    if (loading || projectsLoading) {
+      return;
+    }
     setLoading(true);
     const defs = await buildService.listDefinitions(
       tenantId!,
@@ -29,26 +39,23 @@ const BuildDefinitionList = () => {
     );
     setDefinitions(defs);
     setLoading(false);
-  };
+  }, [
+    tenantId,
+    organizationId,
+    projectId,
+    buildService,
+    loading,
+    projectsLoading
+  ]);
 
   useEffect(() => {
-    if (!tenantId || !organizationId || !projectId) {
-      return;
-    }
     load();
     const id = window.setInterval(() => {
-      if (
-        loading ||
-        projectsLoading ||
-        !definitions.some(b => b.repository.type === "TfsGit")
-      ) {
-        return;
-      }
       load();
     }, 60000);
 
     return () => window.clearInterval(id);
-  });
+  }, [tenantId, organizationId, projectId, load]);
 
   if (loading && projectsLoading) {
     return <Spinner size={Spinner.SIZE_LARGE} />;
