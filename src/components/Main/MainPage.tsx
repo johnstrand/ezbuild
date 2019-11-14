@@ -23,7 +23,6 @@ const MainPage = () => {
         pathSegs[pathSegs.length - 1] = id.toString().substr(1);
         window.location.hash = pathSegs.join("/");
       }}
-      renderActiveTabPanelOnly
     >
       <Tab id="#builds" title="Builds" panel={<BuildDefinitionList />} />
       <Tab id="#releases" title="Releases" panel={<ReleaseDefinitionList />} />
