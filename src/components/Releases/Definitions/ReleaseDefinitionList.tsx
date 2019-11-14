@@ -6,10 +6,10 @@ import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
 import { releaseDefinitionCompare } from "utils/Comparers";
 
 const ReleaseDefinitionList = () => {
-  const { releaseDefinitions, approvals } = useSquawk(
-    "releaseDefinitions",
-    "approvals"
-  );
+  const { releaseService } = useSquawk("releaseService");
+
+  return <div>Releases</div>;
+  /*
   const loading = usePending("releaseDefinitions");
 
   if (loading) {
@@ -44,6 +44,7 @@ const ReleaseDefinitionList = () => {
       </tbody>
     </HTMLTable>
   );
+  */
 };
 
 export default ReleaseDefinitionList;

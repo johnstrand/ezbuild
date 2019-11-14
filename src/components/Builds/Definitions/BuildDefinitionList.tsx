@@ -6,44 +6,47 @@ import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader
 import { buildDefinitionCompare } from "utils/Comparers";
 import BuildDefinitionListItem from "./BuildDefinitionListItem";
 import Button from "components/Common/Button";
-import { listBuildDefinitions } from "utils/Actions";
+import { BuildDefinition } from "utils/ApiTypes";
 
 const BuildDefinitionList = () => {
-  const { buildDefinitions, tenantId, organizationId, projectId } = useSquawk(
-    "buildDefinitions",
+  const { buildService, tenantId, organizationId, projectId } = useSquawk(
+    "buildService",
     "tenantId",
     "organizationId",
     "projectId"
   );
-  const loading = usePending("buildDefinitions");
-  const [refreshing, setRefreshing] = useState(false);
 
-  const refresh = async () => {
-    setRefreshing(true);
-    await listBuildDefinitions({
-      tenantId: tenantId!,
-      organizationId: organizationId!,
-      projectId: projectId!
-    });
-    setRefreshing(false);
+  const projectsLoading = usePending("projects");
+  const [loading, setLoading] = useState(true);
+  const [definitions, setDefinitions] = useState<BuildDefinition[]>([]);
+
+  const load = async () => {
+    setLoading(true);
+    const defs = await buildService.listDefinitions(
+      tenantId!,
+      organizationId!,
+      projectId!
+    );
+    setDefinitions(defs);
+    setLoading(false);
   };
 
   useEffect(() => {
+    if (!tenantId || !organizationId || !projectId) {
+      return;
+    }
+    load();
     const id = window.setInterval(() => {
-      if (
-        refreshing ||
-        loading ||
-        !buildDefinitions.some(b => b.repository.type === "TfsGit")
-      ) {
+      if (loading || !definitions.some(b => b.repository.type === "TfsGit")) {
         return;
       }
-      refresh();
+      load();
     }, 60000);
 
     return () => window.clearInterval(id);
-  });
+  }, [tenantId, organizationId, projectId]);
 
-  if (loading && !refreshing) {
+  if (loading && projectsLoading) {
     return <Spinner size={Spinner.SIZE_LARGE} />;
   }
 
@@ -51,9 +54,9 @@ const BuildDefinitionList = () => {
     <div>
       <Button
         icon="refresh"
-        disabled={refreshing}
+        disabled={loading}
         tooltip="Refresh builds"
-        onClick={refresh}
+        onClick={load}
       />
       <HTMLTable bordered striped style={{ width: "100%" }}>
         <HTMLTableSingleHeader>
@@ -67,9 +70,9 @@ const BuildDefinitionList = () => {
           <HTMLTableNoDataRow
             columns={5}
             text="This project does not have any builds defined"
-            visible={buildDefinitions.length === 0}
+            visible={definitions.length === 0}
           />
-          {buildDefinitions.sort(buildDefinitionCompare).map(b => (
+          {definitions.sort(buildDefinitionCompare).map(b => (
             <BuildDefinitionListItem key={b.id} definition={b} />
           ))}
         </tbody>

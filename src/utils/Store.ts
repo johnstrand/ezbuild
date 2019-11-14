@@ -29,9 +29,6 @@ interface AppState {
   organizationId: string | null;
   projects: Project[];
   projectId: string | null;
-  buildDefinitions: BuildDefinition[];
-  releaseDefinitions: ReleaseDefinition[];
-  approvals: Approval[];
   projectService: ProjectService;
   buildService: BuildService;
   repositoryService: RepositoryService;
@@ -52,9 +49,6 @@ export const { action, useSquawk, pending, usePending, update } = createStore<
   organizationId: null,
   projects: [],
   projectId: null,
-  buildDefinitions: [],
-  releaseDefinitions: [],
-  approvals: [],
   projectService: Api.projectService,
   buildService: Api.buildService,
   repositoryService: Api.repositoryService,
