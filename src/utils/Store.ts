@@ -20,7 +20,6 @@ import { getAccount } from "utils/Auth";
 import Api from "./Api/Api";
 
 interface AppState {
-  authority: string;
   tenantFilter: AzureTenant[];
   tenants: AzureTenant[];
   tenantId: string | null;
@@ -40,7 +39,6 @@ interface AppState {
 export const { action, useSquawk, pending, usePending, update } = createStore<
   AppState
 >({
-  authority: "common",
   tenantFilter: JSON.parse(localStorage.getItem("tenantFilter")!) || [],
   tenants: [],
   tenantId: null,
