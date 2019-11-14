@@ -37,7 +37,11 @@ const BuildDefinitionList = () => {
     }
     load();
     const id = window.setInterval(() => {
-      if (loading || !definitions.some(b => b.repository.type === "TfsGit")) {
+      if (
+        loading ||
+        projectsLoading ||
+        !definitions.some(b => b.repository.type === "TfsGit")
+      ) {
         return;
       }
       load();

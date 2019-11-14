@@ -1,20 +1,60 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSquawk, usePending } from "utils/Store";
 import { Spinner, HTMLTable } from "@blueprintjs/core";
 import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader";
 import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
 import { releaseDefinitionCompare } from "utils/Comparers";
+import { ReleaseDefinition, Approval } from "utils/ApiTypes";
 
 const ReleaseDefinitionList = () => {
-  const { releaseService } = useSquawk("releaseService");
+  const { releaseService, tenantId, organizationId, projectId } = useSquawk(
+    "releaseService",
+    "tenantId",
+    "organizationId",
+    "projectId"
+  );
 
-  return <div>Releases</div>;
-  /*
-  const loading = usePending("releaseDefinitions");
+  const projectsLoading = usePending("projects");
+  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<[ReleaseDefinition[], Approval[]]>([
+    [],
+    []
+  ]);
 
-  if (loading) {
+  const load = async () => {
+    setLoading(true);
+    const response = await Promise.all([
+      await releaseService.listDefinitions(
+        tenantId!,
+        organizationId!,
+        projectId!
+      ),
+      await releaseService.listApprovals(tenantId!, organizationId!, projectId!)
+    ]);
+    setState(response);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (!tenantId || !organizationId || !projectId) {
+      return;
+    }
+    load();
+    const id = window.setInterval(() => {
+      if (loading || projectsLoading) {
+        return;
+      }
+      load();
+    }, 60000);
+
+    return () => window.clearInterval(id);
+  }, [tenantId, organizationId, projectId]);
+
+  if (loading && projectsLoading) {
     return <Spinner size={Spinner.SIZE_LARGE} />;
   }
+
+  const [releaseDefinitions, approvals] = state;
 
   return (
     <HTMLTable bordered striped style={{ width: "100%" }}>
@@ -44,7 +84,6 @@ const ReleaseDefinitionList = () => {
       </tbody>
     </HTMLTable>
   );
-  */
 };
 
 export default ReleaseDefinitionList;
