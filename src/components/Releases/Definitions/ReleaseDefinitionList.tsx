@@ -79,10 +79,11 @@ const ReleaseDefinitionList = () => {
           <th>Name</th>
           <th>Path</th>
           <th>Approvals</th>
+          <th></th>
         </HTMLTableSingleHeader>
         <tbody>
           <HTMLTableNoDataRow
-            columns={3}
+            columns={4}
             text="This project does not have any releases defined"
             visible={releaseDefinitions.length === 0}
           />

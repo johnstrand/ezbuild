@@ -21,6 +21,11 @@ const ReleaseDefinitionListItem = (props: Props) => {
           />
         ))}
       </td>
+      <td>
+        <Button tooltip="View history" icon="history" />
+        <Button tooltip="View release definition" icon="code-block" />
+        <Button icon="play" intent="primary" tooltip="Create new release" />
+      </td>
     </tr>
   );
 };
