@@ -1,6 +1,9 @@
 import React from "react";
 import { ReleaseDefinition, Approval } from "utils/ApiTypes";
-import Button from "components/Common/Button";
+import ReleaseApprove from "../Approval/ReleaseApprove";
+import ReleaseDefinitionProcess from "../Process/ReleaseDefinitionProcess";
+import ReleaseHistoryList from "../History/ReleaseHistoryList";
+import CreateRelease from "../Create/CreateRelease";
 
 interface Props {
   definition: ReleaseDefinition;
@@ -14,18 +17,14 @@ const ReleaseDefinitionListItem = (props: Props) => {
       <td>{definition.name}</td>
       <td>{definition.path}</td>
       <td>
-        {approvals.map(r => (
-          <Button
-            key={r.id}
-            text={r.releaseEnvironment.name}
-            tooltip={`Approve release to ${r.releaseEnvironment.name}`}
-          />
+        {approvals.map(approval => (
+          <ReleaseApprove key={approval.id} approvals={[approval]} />
         ))}
       </td>
       <td>
-        <Button tooltip="View history" icon="history" />
-        <Button tooltip="View release definition" icon="code-block" />
-        <Button icon="play" intent="primary" tooltip="Create new release" />
+        <ReleaseHistoryList />
+        <ReleaseDefinitionProcess />
+        <CreateRelease />
       </td>
     </tr>
   );

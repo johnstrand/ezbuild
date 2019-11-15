@@ -7,6 +7,7 @@ import { releaseDefinitionCompare } from "utils/Comparers";
 import { ReleaseDefinition, Approval } from "utils/ApiTypes";
 import Button from "components/Common/Button";
 import ReleaseDefinitionListItem from "./ReleaseDefinitionListItem";
+import ReleaseApprove from "../Approval/ReleaseApprove";
 
 const ReleaseDefinitionList = () => {
   const { releaseService, tenantId, organizationId, projectId } = useSquawk(
@@ -69,10 +70,7 @@ const ReleaseDefinitionList = () => {
           tooltip="Refresh builds"
           onClick={load}
         />
-        <Button
-          text="Approve multiple"
-          disabled={releaseDefinitions.length === 0}
-        />
+        {approvals.length > 1 && <ReleaseApprove approvals={approvals} />}
       </ButtonGroup>
       <HTMLTable bordered striped style={{ width: "100%" }}>
         <HTMLTableSingleHeader>
