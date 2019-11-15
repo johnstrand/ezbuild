@@ -3,6 +3,7 @@ import { getVsrm } from "../FetchWrappers";
 import { ResponseList, ReleaseDefinition, Approval } from "utils/ApiTypes";
 
 const releaseService: ReleaseService = {
+  // getDefinition
   async listDefinitions(
     tenantId: string,
     organizationId: string,
