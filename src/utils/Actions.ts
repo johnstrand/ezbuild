@@ -121,41 +121,38 @@ type Selection = {
   projectId?: string;
 };
 
-export const loadSelection = action<Selection | undefined>(
-  async (_, selection) => {
-    selection = selection || getNavSelection();
-
-    if (!selection.tenantId) {
-      const { tenantId } = await listTenants();
-      if (!tenantId) {
-        return {};
-      }
-      selection.tenantId = tenantId!;
+export const loadSelection = action<Selection>(async (_, selection) => {
+  const nav = getNavSelection();
+  if (!selection.tenantId) {
+    const { tenantId } = await listTenants();
+    if (!tenantId) {
+      return {};
     }
-
-    if (!selection.organizationId) {
-      const { organizationId } = await listOrganizations(selection.tenantId);
-      if (!organizationId) {
-        return {};
-      }
-      selection.organizationId = organizationId;
-    }
-
-    if (!selection.projectId) {
-      const { projectId } = await listProjects({
-        tenantId: selection.tenantId!,
-        organizationId: selection.organizationId!
-      });
-      if (!projectId) {
-        return {};
-      }
-      selection.projectId = projectId;
-    }
-
-    return selection;
+    selection.tenantId = nav.tenantId || tenantId!;
   }
-);
+
+  if (!selection.organizationId) {
+    const { organizationId } = await listOrganizations(selection.tenantId);
+    if (!organizationId) {
+      return {};
+    }
+    selection.organizationId = nav.organizationId || organizationId;
+  }
+
+  if (!selection.projectId) {
+    const { projectId } = await listProjects({
+      tenantId: selection.tenantId!,
+      organizationId: selection.organizationId!
+    });
+    if (!projectId) {
+      return {};
+    }
+    selection.projectId = nav.projectId || projectId;
+  }
+
+  return selection;
+});
 
 if (getAccount()) {
-  loadSelection(undefined);
+  loadSelection({});
 }

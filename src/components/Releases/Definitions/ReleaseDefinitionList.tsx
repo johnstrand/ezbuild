@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSquawk, usePending } from "utils/Store";
-import { Spinner, HTMLTable } from "@blueprintjs/core";
+import { Spinner, HTMLTable, ButtonGroup } from "@blueprintjs/core";
 import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader";
 import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
 import { releaseDefinitionCompare } from "utils/Comparers";
 import { ReleaseDefinition, Approval } from "utils/ApiTypes";
+import Button from "components/Common/Button";
+import ReleaseDefinitionListItem from "./ReleaseDefinitionListItem";
 
 const ReleaseDefinitionList = () => {
   const { releaseService, tenantId, organizationId, projectId } = useSquawk(
@@ -22,6 +24,10 @@ const ReleaseDefinitionList = () => {
   ]);
 
   const load = async () => {
+    if (!tenantId || !organizationId || !projectId) {
+      return;
+    }
+
     setLoading(true);
     const response = await Promise.all([
       await releaseService.listDefinitions(
@@ -35,11 +41,7 @@ const ReleaseDefinitionList = () => {
     setLoading(false);
   };
 
-  /*
   useEffect(() => {
-    if (!tenantId || !organizationId || !projectId) {
-      return;
-    }
     load();
     const id = window.setInterval(() => {
       if (loading || projectsLoading) {
@@ -49,42 +51,51 @@ const ReleaseDefinitionList = () => {
     }, 60000);
 
     return () => window.clearInterval(id);
-  }, []);
-  */
+    // eslint-disable-next-line
+  }, [projectId]);
 
-  if (loading && projectsLoading) {
+  if (loading || projectsLoading) {
     return <Spinner size={Spinner.SIZE_LARGE} />;
   }
 
   const [releaseDefinitions, approvals] = state;
 
   return (
-    <HTMLTable bordered striped style={{ width: "100%" }}>
-      <HTMLTableSingleHeader>
-        <th>Name</th>
-        <th>Path</th>
-        <th>Approvals</th>
-      </HTMLTableSingleHeader>
-      <tbody>
-        <HTMLTableNoDataRow
-          columns={3}
-          text="This project does not have any releases defined"
-          visible={releaseDefinitions.length === 0}
+    <div>
+      <ButtonGroup>
+        <Button
+          icon="refresh"
+          disabled={loading}
+          tooltip="Refresh builds"
+          onClick={load}
         />
-        {releaseDefinitions.sort(releaseDefinitionCompare).map(r => (
-          <tr key={r.id}>
-            <td>{r.name}</td>
-            <td>{r.path}</td>
-            <td>
-              {approvals
-                .filter(a => a.releaseDefinition.id === r.id)
-                .map(r => r.releaseEnvironment.name)
-                .join(", ")}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </HTMLTable>
+        <Button
+          text="Approve multiple"
+          disabled={releaseDefinitions.length === 0}
+        />
+      </ButtonGroup>
+      <HTMLTable bordered striped style={{ width: "100%" }}>
+        <HTMLTableSingleHeader>
+          <th>Name</th>
+          <th>Path</th>
+          <th>Approvals</th>
+        </HTMLTableSingleHeader>
+        <tbody>
+          <HTMLTableNoDataRow
+            columns={3}
+            text="This project does not have any releases defined"
+            visible={releaseDefinitions.length === 0}
+          />
+          {releaseDefinitions.sort(releaseDefinitionCompare).map(r => (
+            <ReleaseDefinitionListItem
+              key={r.id}
+              definition={r}
+              approvals={approvals.filter(a => a.releaseDefinition.id === r.id)}
+            />
+          ))}
+        </tbody>
+      </HTMLTable>
+    </div>
   );
 };
 
