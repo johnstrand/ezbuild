@@ -84,7 +84,7 @@ export const listProjects = action<{
       projectCompare
     );
 
-    const { projectId, page } = getNavSelection();
+    const { projectId } = getNavSelection();
 
     const selectedProjectId =
       projects.length > 0
@@ -92,15 +92,6 @@ export const listProjects = action<{
           ? projectId
           : projects[0].id
         : null;
-
-    if (selectedProjectId) {
-      window.location.hash = [
-        tenantId,
-        organizationId,
-        selectedProjectId,
-        page
-      ].join("/");
-    }
 
     return {
       tenantId,
@@ -122,13 +113,12 @@ type Selection = {
 };
 
 export const loadSelection = action<Selection>(async (_, selection) => {
-  const nav = getNavSelection();
   if (!selection.tenantId) {
     const { tenantId } = await listTenants();
     if (!tenantId) {
       return {};
     }
-    selection.tenantId = nav.tenantId || tenantId!;
+    selection.tenantId = tenantId!;
   }
 
   if (!selection.organizationId) {
@@ -136,7 +126,7 @@ export const loadSelection = action<Selection>(async (_, selection) => {
     if (!organizationId) {
       return {};
     }
-    selection.organizationId = nav.organizationId || organizationId;
+    selection.organizationId = organizationId;
   }
 
   if (!selection.projectId) {
@@ -147,8 +137,17 @@ export const loadSelection = action<Selection>(async (_, selection) => {
     if (!projectId) {
       return {};
     }
-    selection.projectId = nav.projectId || projectId;
+    selection.projectId = projectId;
   }
+
+  const { page } = getNavSelection();
+
+  window.location.hash = [
+    selection.tenantId,
+    selection.organizationId,
+    selection.projectId,
+    page
+  ].join("/");
 
   return selection;
 });
