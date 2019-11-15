@@ -16,6 +16,7 @@ const ReleaseDefinitionListItem = (props: Props) => {
       <td>
         {approvals.map(r => (
           <Button
+            key={r.id}
             text={r.releaseEnvironment.name}
             tooltip={`Approve release to ${r.releaseEnvironment.name}`}
           />
