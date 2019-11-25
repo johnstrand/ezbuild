@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { Approval } from "utils/ApiTypes";
-import Button from "components/Common/Button";
-import { Dialog, Checkbox } from "@blueprintjs/core";
-import { DatePicker } from "@blueprintjs/datetime";
+import React, {useState} from 'react';
+import {Approval} from 'utils/ApiTypes';
+import Button from 'components/Common/Button';
+import {Dialog, Checkbox} from '@blueprintjs/core';
+import {DatePicker} from '@blueprintjs/datetime';
 import {
   DialogHeader,
   DialogBody,
-  DialogFooterActions
-} from "components/Common/Dialog";
-import { range } from "utils/Utils";
-import Dropdown from "components/Common/Dropdown";
+  DialogFooterActions,
+} from 'components/Common/Dialog';
+import {range} from 'utils/Utils';
+import Dropdown from 'components/Common/Dropdown';
 
 interface Props {
   approvals: Approval[];
@@ -18,14 +18,20 @@ interface Props {
 const hours = range(0, 24).map(h => ({
   key: h,
   value: h,
-  text: h.toString()
+  text: h.toString(),
 }));
 
 const minutes = range(0, 4, 15).map(m => ({
   key: m,
   value: m,
-  text: m.toString()
+  text: m.toString(),
 }));
+
+const getFutureDate = () => {
+  const d = new Date();
+  d.setMonth(d.getMonth() + 1);
+  return d;
+};
 
 const ReleaseApprove = (props: Props) => {
   const [visible, setVisible] = useState(false);
@@ -38,12 +44,12 @@ const ReleaseApprove = (props: Props) => {
   const title =
     props.approvals.length === 1
       ? props.approvals[0].releaseEnvironment.name
-      : "Approve multiple";
+      : 'Approve multiple';
 
   const tooltip =
     props.approvals.length === 1
       ? `Approve release to ${props.approvals[0].releaseEnvironment.name}`
-      : "Select releases to approve";
+      : 'Select releases to approve';
 
   return (
     <>
@@ -51,13 +57,12 @@ const ReleaseApprove = (props: Props) => {
       <Dialog
         isOpen={visible}
         onClose={() => setVisible(false)}
-        className="bp3-dark"
-      >
+        className="bp3-dark">
         <DialogHeader content="Approve release" />
         <DialogBody>
           {props.approvals.map(approval => (
             <div key={approval.id}>
-              {approval.releaseDefinition.name} to{" "}
+              {approval.releaseDefinition.name} to{' '}
               {approval.releaseEnvironment.name}
             </div>
           ))}
@@ -65,8 +70,7 @@ const ReleaseApprove = (props: Props) => {
             <Checkbox
               title="Defer release"
               checked={defer}
-              onChange={() => setDefer(!defer)}
-            >
+              onChange={() => setDefer(!defer)}>
               Defer release
             </Checkbox>
           </div>
@@ -74,7 +78,9 @@ const ReleaseApprove = (props: Props) => {
             <div>
               <DatePicker
                 locale="sv-se"
-                dayPickerProps={{ firstDayOfWeek: 1 }}
+                dayPickerProps={{firstDayOfWeek: 1}}
+                minDate={new Date()}
+                maxDate={getFutureDate()}
               />
               <Dropdown<number>
                 loading={false}
