@@ -46,6 +46,8 @@ const ReleaseApprove = (props: Props) => {
       ? props.approvals[0].releaseEnvironment.name
       : 'Approve multiple';
 
+  const multiple = props.approvals.length > 1;
+
   const tooltip =
     props.approvals.length === 1
       ? `Approve release to ${props.approvals[0].releaseEnvironment.name}`
@@ -62,6 +64,7 @@ const ReleaseApprove = (props: Props) => {
         <DialogBody>
           {props.approvals.map(approval => (
             <div key={approval.id}>
+              {multiple && <Checkbox />}
               {approval.releaseDefinition.name} to{' '}
               {approval.releaseEnvironment.name}
             </div>
