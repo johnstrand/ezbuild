@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/ezbuild/static/css/main.634ef570.chunk.css",
+    "main.js": "/ezbuild/static/js/main.397b3ee5.chunk.js",
+    "main.js.map": "/ezbuild/static/js/main.397b3ee5.chunk.js.map",
+    "runtime-main.js": "/ezbuild/static/js/runtime-main.8aba6bc0.js",
+    "runtime-main.js.map": "/ezbuild/static/js/runtime-main.8aba6bc0.js.map",
+    "static/css/2.cf0bcc05.chunk.css": "/ezbuild/static/css/2.cf0bcc05.chunk.css",
+    "static/js/2.f8a2d411.chunk.js": "/ezbuild/static/js/2.f8a2d411.chunk.js",
+    "static/js/2.f8a2d411.chunk.js.map": "/ezbuild/static/js/2.f8a2d411.chunk.js.map",
+    "index.html": "/ezbuild/index.html",
+    "precache-manifest.b3944e40f8c712f59a392535f72fedcb.js": "/ezbuild/precache-manifest.b3944e40f8c712f59a392535f72fedcb.js",
+    "service-worker.js": "/ezbuild/service-worker.js",
+    "static/css/2.cf0bcc05.chunk.css.map": "/ezbuild/static/css/2.cf0bcc05.chunk.css.map",
+    "static/css/main.634ef570.chunk.css.map": "/ezbuild/static/css/main.634ef570.chunk.css.map",
+    "static/media/blueprint-icons.css": "/ezbuild/static/media/icons-20.9f1e6164.woff"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8aba6bc0.js",
+    "static/css/2.cf0bcc05.chunk.css",
+    "static/js/2.f8a2d411.chunk.js",
+    "static/css/main.634ef570.chunk.css",
+    "static/js/main.397b3ee5.chunk.js"
+  ]
+}
