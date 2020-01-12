@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { useSquawk, usePending } from "utils/Store";
-import { Spinner, HTMLTable, ButtonGroup } from "@blueprintjs/core";
-import HTMLTableSingleHeader from "components/Common/Table/HTMLTableSingleHeader";
-import HTMLTableNoDataRow from "components/Common/Table/HTMLTableNoDataRow";
-import { releaseDefinitionCompare } from "utils/Comparers";
-import { ReleaseDefinition, Approval } from "utils/ApiTypes";
-import Button from "components/Common/Button";
-import ReleaseDefinitionListItem from "./ReleaseDefinitionListItem";
-import ReleaseApprove from "../Approval/ReleaseApprove";
+import React, {useState, useEffect} from 'react';
+import {useSquawk, usePending} from 'utils/Store';
+import {Spinner, HTMLTable, ButtonGroup} from '@blueprintjs/core';
+import HTMLTableSingleHeader from 'components/Common/Table/HTMLTableSingleHeader';
+import HTMLTableNoDataRow from 'components/Common/Table/HTMLTableNoDataRow';
+import {releaseDefinitionCompare} from 'utils/Comparers';
+import {ReleaseDefinition, Approval} from 'utils/ApiTypes';
+import Button from 'components/Common/Button';
+import ReleaseDefinitionListItem from './ReleaseDefinitionListItem';
+import ReleaseApprove from '../Approval/ReleaseApprove';
 
 const ReleaseDefinitionList = () => {
-  const { releaseService, tenantId, organizationId, projectId } = useSquawk(
-    "releaseService",
-    "tenantId",
-    "organizationId",
-    "projectId"
+  const {releaseService, tenantId, organizationId, projectId} = useSquawk(
+    'releaseService',
+    'tenantId',
+    'organizationId',
+    'projectId',
   );
 
-  const projectsLoading = usePending("projects");
+  const projectsLoading = usePending('projects');
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState<[ReleaseDefinition[], Approval[]]>([
     [],
-    []
+    [],
   ]);
 
   const load = async () => {
@@ -34,9 +34,13 @@ const ReleaseDefinitionList = () => {
       await releaseService.listDefinitions(
         tenantId!,
         organizationId!,
-        projectId!
+        projectId!,
       ),
-      await releaseService.listApprovals(tenantId!, organizationId!, projectId!)
+      await releaseService.listApprovals(
+        tenantId!,
+        organizationId!,
+        projectId!,
+      ),
     ]);
     setState(response);
     setLoading(false);
@@ -52,6 +56,7 @@ const ReleaseDefinitionList = () => {
     }, 60000);
 
     return () => window.clearInterval(id);
+    // TODO: Figure this out
     // eslint-disable-next-line
   }, [projectId]);
 
@@ -72,7 +77,7 @@ const ReleaseDefinitionList = () => {
         />
         {approvals.length > 1 && <ReleaseApprove approvals={approvals} />}
       </ButtonGroup>
-      <HTMLTable bordered striped style={{ width: "100%" }}>
+      <HTMLTable bordered striped style={{width: '100%'}}>
         <HTMLTableSingleHeader>
           <th>Name</th>
           <th>Path</th>
