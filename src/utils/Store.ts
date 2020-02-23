@@ -1,4 +1,5 @@
-import createStore from "squawk-react";
+// import createStore from "squawk-react";
+import createStore from "./Squawk";
 import { Project, AzureTenant, Organization } from "utils/ApiTypes";
 import {
   ProjectService,
@@ -29,21 +30,21 @@ interface AppState {
   accountService: AccountService;
 }
 
-export const { action, useSquawk, pending, usePending } = createStore<AppState>(
-  {
-    tenantFilter: JSON.parse(localStorage.getItem("tenantFilter")!) || [],
-    tenants: [],
-    tenantId: null,
-    account: getAccount(),
-    organizations: [],
-    organizationId: null,
-    projects: [],
-    projectId: null,
-    projectService: Api.projectService,
-    buildService: Api.buildService,
-    repositoryService: Api.repositoryService,
-    releaseService: Api.releaseService,
-    profileService: Api.profileService,
-    accountService: Api.accountService
-  }
-);
+export const { useSquawk, pending, usePending, mutableAction } = createStore<
+  AppState
+>({
+  tenantFilter: JSON.parse(localStorage.getItem("tenantFilter")!) || [],
+  tenants: [],
+  tenantId: null,
+  account: getAccount(),
+  organizations: [],
+  organizationId: null,
+  projects: [],
+  projectId: null,
+  projectService: Api.projectService,
+  buildService: Api.buildService,
+  repositoryService: Api.repositoryService,
+  releaseService: Api.releaseService,
+  profileService: Api.profileService,
+  accountService: Api.accountService
+});

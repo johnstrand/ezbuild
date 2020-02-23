@@ -45,7 +45,7 @@ const BuildDefinitionList = () => {
     // eslint-disable-next-line
   }, [projectId]);
 
-  if (loading || projectsLoading) {
+  if (projectsLoading) {
     return <Spinner size={Spinner.SIZE_LARGE} />;
   }
 

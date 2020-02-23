@@ -8,11 +8,13 @@ const MainPage = () => {
     location: { hash }
   } = window;
 
-  const pathSegments = (hash || "builds").split("/");
+  const pathSegments = (hash || "#builds").split("/");
 
   const [selected, setSelected] = useState(
-    "#" + pathSegments[pathSegments.length - 1]
+    pathSegments[pathSegments.length - 1]
   );
+
+  console.log(selected);
 
   return (
     <Tabs

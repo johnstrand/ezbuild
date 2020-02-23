@@ -1,4 +1,5 @@
-import { useEffect, useReducer, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
+import produce from "immer";
 
 export default function createStore<TStore>(globalState: TStore) {
   type StoreProps = keyof TStore;
@@ -9,16 +10,8 @@ export default function createStore<TStore>(globalState: TStore) {
   /** Type alias for reducers: (value: T) => any */
   type Reducer<T = any> = (value: T) => any;
 
-  /** Helper method to produce unique union */
-  const union = <T>(...arrays: T[][]) => {
-    const items = new Set<T>();
-    arrays.forEach(array => array.forEach(item => items.add(item)));
-    return Array.from(items);
-  };
-
   /** Map that links individual keys in TStore to the reducer callbacks */
   const subscribers = new Map<string, Set<Reducer>>();
-  const subscriberCache = new Map();
 
   /** Map that links individual keys in TStore to the pending operation callbacks */
   const pendingState: StorePending = ({} as unknown) as StorePending;
@@ -35,20 +28,31 @@ export default function createStore<TStore>(globalState: TStore) {
       return;
     }
 
-    /** Get a list of affected contexts from value object */
-    const contexts = Object.keys(value);
-    /** Get a (non-unique) list of affected reducers */
-    const reducers = contexts
-      .filter(context => subscribers.has(context))
-      .map(context => Array.from(subscribers.get(context)!));
-
     /** Merge updated values with global state */
     globalState = { ...globalState, ...value };
 
+    /** Get a list of affected contexts from value object */
+    internalDispatch(Object.keys(value));
+  };
+
+  const internalDispatch = (contexts: string[]) => {
+    /** Get a (non-unique) list of affected reducers */
+    const reducers = contexts
+      .filter(context => subscribers.has(context))
+      .map(context => subscribers.get(context)!);
+
     /** Get unique reducers and invoke them */
-    union(...reducers).forEach(reducer => {
+    const invokedReducers = new Set<Reducer>();
+    const reduceEach = (reducer: Reducer) => {
+      if (invokedReducers.has(reducer)) {
+        return;
+      }
+      invokedReducers.add(reducer);
       reducer(globalState);
-    });
+    };
+    for (const list of reducers) {
+      list.forEach(reduceEach);
+    }
   };
 
   /** Internal method for setting up and removing subscriptions */
@@ -62,9 +66,8 @@ export default function createStore<TStore>(globalState: TStore) {
     });
 
     /** Return a function that can be used to remove subscriptions */
-    return () => {
-      subscribers.forEach(s => s.delete(reducer));
-    };
+    return () =>
+      contexts.forEach(context => subscribers.get(context)!.delete(reducer));
   };
 
   /** Update variants */
@@ -82,15 +85,15 @@ export default function createStore<TStore>(globalState: TStore) {
   function update<TContext extends StoreProps>(
     value: Pick<TStore, TContext>
   ): void;
-  function update(keyOrReducerOrValue: any, optionalValue?: any): void {
+  function update(keyOrReducerOrValue: any, reducerOrValue?: any): void {
     if (typeof keyOrReducerOrValue === "function") {
       internalUpdate(keyOrReducerOrValue(globalState));
     } else if (typeof keyOrReducerOrValue === "string") {
       internalUpdate({
         [keyOrReducerOrValue]:
-          typeof optionalValue === "function"
-            ? optionalValue((globalState as any)[keyOrReducerOrValue])
-            : optionalValue
+          typeof reducerOrValue === "function"
+            ? reducerOrValue((globalState as any)[keyOrReducerOrValue])
+            : reducerOrValue
       });
     } else {
       internalUpdate(keyOrReducerOrValue);
@@ -127,11 +130,52 @@ export default function createStore<TStore>(globalState: TStore) {
     };
   }
 
+  function mutableAction(
+    ...reducer: ((value: TStore) => Promise<void> | void)[]
+  ): () => Promise<Readonly<TStore>>;
+  function mutableAction<T>(
+    ...reducer: ((value: TStore, payload: T) => Promise<void> | void)[]
+  ): (payload: T) => Promise<Readonly<TStore>>;
+  function mutableAction(
+    ...reducer: ((value: TStore, payload?: any) => Promise<void> | void)[]
+  ) {
+    return async (payload?: any) => {
+      if (executing) {
+        throw Error("A mutableAction is already pending");
+      }
+      executing = true;
+      for (const r of reducer) {
+        const pendingUpdates = new Set<string>();
+        globalState = await Promise.resolve(
+          produce(
+            globalState,
+            st => r(st as TStore, payload),
+            patches => {
+              patches.forEach(patch =>
+                pendingUpdates.add(patch.path[0].toString())
+              );
+            }
+          )
+        );
+        const contexts: string[] = [];
+        pendingUpdates.forEach(context => contexts.push(context));
+        internalDispatch(contexts);
+      }
+
+      executing = false;
+      return globalState;
+    };
+  }
+
+  let executing = false;
+
   return {
     /** Helper function to create "prebaked" update methods */
     action,
     /** Returns a specific named value from the global state */
     get,
+    /** Helper function to create "prebaked" mutable update methods (via immerjs) */
+    mutableAction,
     /** Updates the pending status of the specified context */
     pending<TContext extends StoreProps>(
       context: TContext | TContext[],
@@ -176,7 +220,8 @@ export default function createStore<TStore>(globalState: TStore) {
       if (!pendingSubscribers.has(context as string)) {
         pendingSubscribers.set(context as string, new Set());
       }
-      let callback = (state: boolean) => setPending(state);
+
+      const callback = (state: boolean) => setPending(state);
 
       pendingSubscribers.get(context as string)!.add(callback);
 
@@ -193,49 +238,45 @@ export default function createStore<TStore>(globalState: TStore) {
     useSquawk<TContext extends StoreProps>(
       ...contexts: TContext[]
     ): Pick<TStore, TContext> {
-      /** Local reducer simply copies the contexts from the state */
-      const localReducer = useCallback(
-        (state: TStore) => {
-          return contexts.reduce(
-            (acc, cur) => ({ ...acc, ...{ [cur]: state[cur] } }),
-            {}
-          ) as Pick<TStore, TContext>;
-        },
-        [contexts]
-      );
+      /** context list should never change */
+      const ctx = useRef(contexts);
+      /** Keep track if the component is mounted */
+      const isMounted = useRef(true);
 
-      /** Simple merging reducer, as we will only dispatch partial states */
-      const mergingReducer = (state: any, mergeAction: any) => ({
-        ...state,
-        ...mergeAction
+      /** Define reducer with useRef to guarantee stable identity */
+      const localReducer = useRef((state: TStore) => {
+        return ctx.current.reduce(
+          (acc, cur) => ({ ...acc, ...{ [cur]: state[cur] } }),
+          {}
+        ) as Pick<TStore, TContext>;
       });
 
-      /** Derive local state from global state */
-      const initialLocalState = localReducer(globalState);
+      /** Initialize useState with the local state */
+      const [localState, localDispatcher] = useState(
+        localReducer.current(globalState)
+      );
 
-      /** Initialize useReducer with the local state */
-      let [localState, localDispatcher] = useReducer(
-        mergingReducer,
-        initialLocalState
+      /** Define subscribe via callback to guarantee stable identity */
+      const subscriber = useRef((value: any) => {
+        if (isMounted.current) {
+          /** Filter global state through reducer to get new local state */
+          localDispatcher(localReducer.current(value));
+        }
+      });
+
+      /** Set up subscriptions for the contexts in the local state */
+      const unsubscribe = useRef(
+        internalSubscribe(ctx.current as string[], subscriber.current)
       );
 
       useEffect(() => {
-        /** Set up subscriptions for the contexts in the local state */
-        const unsubscribe = subscriberCache.has(localDispatcher)
-          ? subscriberCache.get(localDispatcher)
-          : internalSubscribe(Object.keys(initialLocalState), value => {
-              /** value will be the global state, so run it through the local reducer before dispatching it locally */
-              if (localDispatcher) {
-                localDispatcher(localReducer(value));
-              }
-            });
-
+        isMounted.current = true;
+        const unsubscribeRef = unsubscribe.current;
         return () => {
-          unsubscribe();
-          subscriberCache.delete(localDispatcher);
-          (localDispatcher as any) = undefined;
+          isMounted.current = false;
+          unsubscribeRef();
         };
-      }, [initialLocalState, localReducer]);
+      }, [unsubscribe]);
 
       return localState;
     }

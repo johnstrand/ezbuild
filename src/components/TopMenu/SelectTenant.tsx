@@ -1,11 +1,7 @@
 import React from "react";
 import { useSquawk, usePending } from "utils/Store";
-import { loadSelection } from "utils/Actions";
 import Dropdown from "components/Common/Dropdown";
-
-const selectTenant = async (tenantId: string) => {
-  loadSelection({ tenantId });
-};
+import { listOrganizations } from "utils/Actions";
 
 const SelectTenant = () => {
   const { tenants, tenantId } = useSquawk("tenants", "tenantId");
@@ -22,7 +18,7 @@ const SelectTenant = () => {
       loading={loading}
       value={tenantId || undefined}
       items={items}
-      onChange={tenant => selectTenant(tenant)}
+      onChange={listOrganizations}
       noData="No Azure tenants found"
     />
   );

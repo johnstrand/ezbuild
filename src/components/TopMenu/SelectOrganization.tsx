@@ -1,11 +1,7 @@
 import React from "react";
 import { useSquawk, usePending } from "utils/Store";
-import { loadSelection } from "utils/Actions";
 import Dropdown from "components/Common/Dropdown";
-
-const selectOrg = (tenantId: string, organizationId: string) => {
-  loadSelection({ tenantId, organizationId });
-};
+import { listProjects } from "utils/Actions";
 
 const SelectOrganization = () => {
   const { organizations, tenantId, organizationId } = useSquawk(
@@ -13,6 +9,7 @@ const SelectOrganization = () => {
     "tenantId",
     "organizationId"
   );
+
   const loading = usePending("organizations");
 
   const items = organizations.map(o => ({
@@ -26,7 +23,9 @@ const SelectOrganization = () => {
       loading={loading}
       value={organizationId || undefined}
       items={items}
-      onChange={value => selectOrg(tenantId!, value)}
+      onChange={orgId =>
+        listProjects({ tenantId: tenantId!, organizationId: orgId })
+      }
       noData="No Azure DevOps organizations found in tenant"
     />
   );

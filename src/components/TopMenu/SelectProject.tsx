@@ -1,23 +1,10 @@
 import React from "react";
 import { useSquawk, usePending } from "utils/Store";
-import { loadSelection } from "utils/Actions";
 import Dropdown from "components/Common/Dropdown";
-
-const selectProject = (
-  tenantId: string,
-  organizationId: string,
-  projectId: string
-) => {
-  loadSelection({ tenantId, organizationId, projectId });
-};
+import { selectProject } from "utils/Actions";
 
 const SelectProject = () => {
-  const { projects, tenantId, organizationId, projectId } = useSquawk(
-    "projects",
-    "tenantId",
-    "organizationId",
-    "projectId"
-  );
+  const { projects, projectId } = useSquawk("projects", "projectId");
   const loading = usePending("projects");
 
   const items = projects.map(p => ({
@@ -29,7 +16,7 @@ const SelectProject = () => {
   return (
     <Dropdown<string>
       items={items}
-      onChange={value => selectProject(tenantId!, organizationId!, value)}
+      onChange={selectProject}
       loading={loading}
       noData="No projects found"
       value={projectId || undefined}

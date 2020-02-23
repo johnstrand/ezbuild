@@ -1,4 +1,4 @@
-import { action, pending } from "utils/Store";
+import { mutableAction, pending } from "utils/Store";
 import { getTenants, getAccount } from "utils/Auth";
 import { AzureTenant } from "utils/ApiTypes";
 import showToast from "utils/AppToaster";
@@ -9,26 +9,28 @@ import {
 } from "./Comparers";
 import getNavSelection from "./NavSelection";
 
-export const addTenantFilter = action<AzureTenant>((state, tenant) => {
+export const addTenantFilter = mutableAction<AzureTenant>((state, tenant) => {
   if (state.tenantFilter.some(t => t.tenantId === tenant.tenantId)) {
     showToast("That tenant was already filtered, sorry about that", "warning");
-    return {};
+    return;
   }
 
   showToast(
     "Filter added, please reload page if the filter fails to apply",
     "success"
   );
-  const tenantFilter = [...state.tenantFilter, tenant];
 
-  localStorage.setItem("tenantFilter", JSON.stringify(tenantFilter));
+  state.tenantFilter.push(tenant);
 
-  return { tenantFilter };
+  localStorage.setItem("tenantFilter", JSON.stringify(state.tenantFilter));
 });
 
-export const listTenants = action(async state => {
+export const listTenants = mutableAction(async state => {
   pending(["tenants", "organizations", "projects"], true);
-  const tenants = (await getTenants())
+
+  state.account = getAccount();
+
+  state.tenants = (await getTenants())
     .filter(t => !state.tenantFilter.some(f => f.tenantId === t.tenantId))
     .sort(tenantCompare);
 
@@ -36,122 +38,88 @@ export const listTenants = action(async state => {
 
   const { tenantId } = getNavSelection();
 
-  const selectedTenantId =
-    tenants.length > 0
-      ? tenants.some(t => t.tenantId === tenantId)
+  state.tenantId =
+    state.tenants.length > 0
+      ? state.tenants.some(t => t.tenantId === tenantId)
         ? tenantId
-        : tenants[0].tenantId
+        : state.tenants[0].tenantId
       : null;
-
-  return {
-    tenants,
-    account: getAccount(),
-    tenantId: selectedTenantId
-  };
 });
 
-export const listOrganizations = action<string>(async (state, tenantId) => {
-  pending(["organizations", "projects"], true);
-  const profile = await state.profileService.get(tenantId);
-  const organizations = (
-    await state.accountService.listAccounts(tenantId, profile.id)
-  ).sort(organizationCompare);
-
-  const { organizationId } = getNavSelection();
-
-  const selectedOrganizationId =
-    organizations.length > 0
-      ? organizations.some(o => o.accountName === organizationId)
-        ? organizationId
-        : organizations[0].accountName
-      : null;
-
-  pending(["organizations", "projects"], false);
-  return {
-    organizations,
-    tenantId,
-    organizationId: selectedOrganizationId
-  };
+export const selectTenant = mutableAction<string>((state, tenantId) => {
+  state.tenantId = tenantId;
 });
 
-export const listProjects = action<{
+export const listOrganizations = mutableAction<string>(
+  async (state, tenantId) => {
+    pending(["organizations", "projects"], true);
+    state.tenantId = tenantId;
+    const profile = await state.profileService.get(tenantId);
+    state.organizations = (
+      await state.accountService.listAccounts(tenantId, profile.id)
+    ).sort(organizationCompare);
+
+    const { organizationId } = getNavSelection();
+
+    state.organizationId =
+      state.organizations.length > 0
+        ? state.organizations.some(o => o.accountName === organizationId)
+          ? organizationId
+          : state.organizations[0].accountName
+        : null;
+
+    pending(["organizations", "projects"], false);
+  }
+);
+
+export const selectOrganization = mutableAction<string>(
+  (state, organisationId) => {
+    state.organizationId = organisationId;
+  }
+);
+
+export const listProjects = mutableAction<{
   tenantId: string;
   organizationId: string;
-}>(async ({ projectService }, { tenantId, organizationId }) => {
+}>(async (state, { tenantId, organizationId }) => {
   pending(["projects"], true);
   try {
-    const projects = (await projectService.list(tenantId, organizationId)).sort(
-      projectCompare
-    );
+    state.projects = (
+      await state.projectService.list(tenantId, organizationId)
+    ).sort(projectCompare);
+
+    state.tenantId = tenantId;
+    state.organizationId = organizationId;
 
     const { projectId } = getNavSelection();
 
-    const selectedProjectId =
-      projects.length > 0
-        ? projects.some(p => p.id === projectId)
+    state.projectId =
+      state.projects.length > 0
+        ? state.projects.some(p => p.id === projectId)
           ? projectId
-          : projects[0].id
+          : state.projects[0].id
         : null;
-
-    return {
-      tenantId,
-      projects,
-      organizationId,
-      projectId: selectedProjectId
-    };
   } catch {
   } finally {
     pending(["projects"], false);
   }
-  return {};
 });
 
-type Selection = {
-  tenantId?: string;
-  organizationId?: string;
-  projectId?: string;
-};
+export const selectProject = mutableAction<string>((state, projectId) => {
+  state.projectId = projectId;
+});
 
-export const loadSelection = action<Selection>(async (_, selection) => {
-  if (!selection.tenantId) {
+(async () => {
+  if (getAccount()) {
     const { tenantId } = await listTenants();
     if (!tenantId) {
-      return {};
+      return;
     }
-    selection.tenantId = tenantId!;
-  }
-
-  if (!selection.organizationId) {
-    const { organizationId } = await listOrganizations(selection.tenantId);
+    const { organizationId } = await listOrganizations(tenantId);
     if (!organizationId) {
-      return {};
+      return;
     }
-    selection.organizationId = organizationId;
+
+    await listProjects({ tenantId, organizationId });
   }
-
-  if (!selection.projectId) {
-    const { projectId } = await listProjects({
-      tenantId: selection.tenantId!,
-      organizationId: selection.organizationId!
-    });
-    if (!projectId) {
-      return {};
-    }
-    selection.projectId = projectId;
-  }
-
-  const { page } = getNavSelection();
-
-  window.location.hash = [
-    selection.tenantId,
-    selection.organizationId,
-    selection.projectId,
-    page
-  ].join("/");
-
-  return selection;
-});
-
-if (getAccount()) {
-  loadSelection({});
-}
+})();
